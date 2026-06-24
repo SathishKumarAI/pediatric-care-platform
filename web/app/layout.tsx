@@ -12,6 +12,7 @@ const NAV = [
   { href: "/symptom-checker", label: "Symptom Checker" },
   { href: "/appointments", label: "Appointments" },
   { href: "/doctors", label: "Doctors" },
+  { href: "/records", label: "Records" },
   { href: "/stages", label: "Growth Stages" },
 ];
 

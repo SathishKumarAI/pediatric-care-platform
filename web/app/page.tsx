@@ -7,6 +7,7 @@ const CARDS = [
   { href: "/symptom-checker", title: "Symptom Checker", desc: "AI decision support over a symptom→disease knowledge graph.", emoji: "🧠" },
   { href: "/appointments", title: "Appointments", desc: "Book and view visits with conflict detection.", emoji: "📅" },
   { href: "/doctors", title: "Doctors", desc: "Browse pediatricians and availability.", emoji: "👩‍⚕️" },
+  { href: "/records", title: "Medical Records", desc: "View and add a patient's clinical notes.", emoji: "📋" },
   { href: "/stages", title: "Growth Stages", desc: "Developmental milestones and red flags by age.", emoji: "📈" },
 ];
 

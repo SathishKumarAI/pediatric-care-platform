@@ -64,3 +64,19 @@ def test_stages_milestones_and_redflags():
 
 def test_stages_out_of_range_422():
     assert client.get("/stages/999").status_code == 422
+
+
+def test_records_add_and_list_by_subject():
+    rec = {
+        "id": "rec-test-1", "subject": "patient-xyz",
+        "recorded": "2026-06-24T10:00:00Z", "note": "First visit — mild cough",
+        "attachments": [],
+    }
+    assert client.post("/records", json=rec).status_code == 201
+    listed = client.get("/records/patient-xyz").json()
+    assert any(r["id"] == "rec-test-1" for r in listed)
+    assert all(r["subject"] == "patient-xyz" for r in listed)
+
+
+def test_records_empty_for_unknown_subject():
+    assert client.get("/records/nobody-here").json() == []

@@ -33,6 +33,14 @@ export interface Appointment {
   status: "booked" | "cancelled" | "fulfilled";
 }
 
+export interface MedicalRecord {
+  id: string;
+  subject: string;
+  recorded: string;
+  note: string;
+  attachments: string[];
+}
+
 export interface Milestone {
   age_months: number;
   domain: string;
@@ -81,4 +89,18 @@ export const api = {
     }),
 
   stages: (ageMonths: number) => req<StageResponse>(`/stages/${ageMonths}`),
+
+  records: (subject: string) => req<MedicalRecord[]>(`/records/${subject}`),
+
+  addRecord: (rec: {
+    id: string;
+    subject: string;
+    recorded: string;
+    note: string;
+    attachments?: string[];
+  }) =>
+    req<MedicalRecord>("/records", {
+      method: "POST",
+      body: JSON.stringify({ attachments: [], ...rec }),
+    }),
 };

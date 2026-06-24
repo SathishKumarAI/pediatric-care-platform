@@ -4,6 +4,12 @@ All notable changes to this project are documented here. Format follows [Keep a 
 
 ## [Unreleased]
 
+### Added
+- Medical Records UI (`web/app/records/page.tsx`): view a patient's append-only records by ID and add clinical notes with optional attachment refs (PCP-2).
+- `records` / `addRecord` methods + `MedicalRecord` type in the typed API client.
+- Backend tests for `POST`/`GET /records` (now 11 passing).
+- `docs/TICKETS.md` live build backlog; `docs/WORKLOG.md` append-only session log.
+
 ### Planned
 - Wire Chroma + RAG over clinical guidelines.
 - Swap the weighted-overlap predictor for a trained GNN behind the existing interface.
