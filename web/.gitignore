@@ -4,6 +4,11 @@ out/
 .env
 .env.local
 next-env.d.ts
+# Test artifacts
+coverage/
+test-results/
+playwright-report/
+.playwright/
 # Tauri build artifacts
 src-tauri/target/
 src-tauri/gen/

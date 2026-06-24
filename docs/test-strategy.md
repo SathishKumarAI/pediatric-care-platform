@@ -16,8 +16,8 @@ as if lives depended on it, because in production they would.
 | API integration | Router behaviour over real request/response, status codes, validation | pytest + `TestClient` | Proves `app/routers/*` + `app/schemas.py` wire together; catches 409/422/404 contract drift |
 | Predictor eval | Model quality (top-1 / top-3 accuracy) against labelled cases | `eval/run_eval.py` over `eval/cases.yaml` | A unit test says "code runs"; eval says "predictions are *right*" — a separate, regressible quality gate |
 | Contract | `app/schemas.py` ↔ `web/lib/api.ts` stay in sync | manual now → codegen (planned) | A typed frontend that lies about the API is worse than an untyped one |
-| Component | React pages/components render + handle states | Vitest + Testing Library (**planned**) | No frontend tests exist yet |
-| E2E | Full flow: symptom entry → predict → triage banner | Playwright (**planned**) | Desktop (Tauri) flows untested end-to-end |
+| Component | React pages/components render + handle states | Vitest + Testing Library (**wired**, `npm run test` — api client + Doctors page) | Grows per page (PCP-3) |
+| E2E | Full flow: symptom entry → predict → triage banner | Playwright (**wired**, `npm run test:e2e` — needs `npx playwright install` + backend) | `web/e2e/smoke.spec.ts` covers dashboard nav + stages |
 
 Heavier layers are thinner — most logic should be provable at the unit/eval
 level, where it's cheap and deterministic.
@@ -32,8 +32,8 @@ level, where it's cheap and deterministic.
 | Triage red-flag escalation | Covered indirectly | Explicit test per red-flag symptom | **Core (must)** | Safety-critical — see below |
 | Appointment conflict (409) | Asserted in API tests | Dedicated overlap/edge matrix | Core | Boundary cases (touching, contained, identical) |
 | Validation (422) | Partial | Every required-field / bad-type case | Growing | Pydantic gives this cheaply |
-| Frontend components | None | Key pages render + error/loading states | Growing | Vitest planned |
-| E2E flows | None | Symptom-check + appointment book happy paths | Heavy | Playwright planned |
+| Frontend components | api client + Doctors page (Vitest) | Every page renders + error/loading states | Growing | Wired (PCP-3); grow per page |
+| E2E flows | Dashboard nav + stages smoke (Playwright) | Symptom-check + appointment book happy paths | Heavy | Wired (PCP-3); needs browsers + backend |
 | Contract (schemas↔client) | Manual review | Automated drift check / codegen | Heavy | Highest leverage once automated |
 | PHI / auth paths | N/A (stubs only) | Full coverage before any real PHI | **Heavy (must, gated)** | Blocks production with real data |
 

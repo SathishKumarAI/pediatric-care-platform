@@ -2,6 +2,29 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 15:02 — PCP-3: Frontend test setup
+
+**Summary:** Stood up the frontend test stack — Vitest + Testing Library for
+unit/component, Playwright for e2e — and wired Vitest into CI.
+
+**Changes:**
+- `web/vitest.config.ts`, `web/vitest.setup.ts` — Vitest + jsdom + `@` alias.
+- `web/lib/__tests__/api.test.ts` — api client: payload building, 409 error detail, records URL.
+- `web/app/__tests__/doctors.test.tsx` — Doctors page renders mocked API data.
+- `web/playwright.config.ts`, `web/e2e/smoke.spec.ts` — e2e smoke (dashboard nav, stages).
+- `.github/workflows/ci.yml` — web job now runs `npm run test`.
+- `web/.gitignore`, `docs/test-strategy.md` — test artifacts ignored; strategy marks Vitest/Playwright wired.
+
+**Decisions:**
+- Vitest (not Jest) — first-class Vite/Tailwind4 + ESM fit, fast.
+- Playwright e2e kept out of CI for now (needs browser install + a running backend); runs locally via `npm run test:e2e`.
+
+**Verification:** `npm run test` 4/4 pass; `next build` clean (9 routes, test files not emitted as routes).
+
+**Follow-ups:**
+- [ ] PCP-4 — patient/child profile model + context.
+- [ ] Grow component tests per page; add symptom-check happy-path e2e.
+
 ## 2026-06-24 14:55 — PCP-1: Persistent SQLite store
 
 **Summary:** Replaced the in-memory-only store with a persistent SQLite layer

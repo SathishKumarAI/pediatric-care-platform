@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Frontend testing: Vitest + Testing Library (api-client + Doctors-page tests, run in CI via `npm run test`) and Playwright e2e smoke (`web/e2e/smoke.spec.ts`, `npm run test:e2e`) (PCP-3).
 - Persistent SQLite store (`app/services/{db,store}.py`): records and appointments now survive restart. `InMemoryStore` and `SqliteStore` sit behind one interface, selected by `DATABASE_URL` (PCP-1).
 - Test isolation via `tests/conftest.py` (throwaway per-session SQLite DB) + persistence-across-restart test (now 12 passing).
 - Medical Records UI (`web/app/records/page.tsx`): view a patient's append-only records by ID and add clinical notes with optional attachment refs (PCP-2).
