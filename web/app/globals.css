@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* Catppuccin Mocha palette (workspace theme standard) */
+@theme {
+  --color-base: #1e1e2e;
+  --color-mantle: #181825;
+  --color-crust: #11111b;
+  --color-surface0: #313244;
+  --color-surface1: #45475a;
+  --color-text: #cdd6f4;
+  --color-subtext: #a6adc8;
+  --color-blue: #89b4fa;
+  --color-green: #a6e3a1;
+  --color-yellow: #f9e2af;
+  --color-peach: #fab387;
+  --color-red: #f38ba8;
+  --color-mauve: #cba6f7;
+}
+
+html, body {
+  background: var(--color-base);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }

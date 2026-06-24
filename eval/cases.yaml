@@ -1,0 +1,16 @@
+# Labeled symptom sets -> expected top disease. Used by eval/run_eval.py to
+# measure top-1 / top-3 accuracy of the symptom predictor. Extend freely.
+- symptoms: [fever, cough, difficulty_breathing]
+  expect: [pneumonia, croup, bronchiolitis]
+- symptoms: [sore_throat, fever, headache]
+  expect: [strep_throat, pharyngitis]
+- symptoms: [vomiting, diarrhea, stomach_pain]
+  expect: [gastroenteritis]
+- symptoms: [ear_pain, fever]
+  expect: [otitis_media]
+- symptoms: [runny_nose, cough, sore_throat]
+  expect: [common_cold, pharyngitis]
+- symptoms: [red_eyes]
+  expect: [conjunctivitis]
+- symptoms: [wheezing, cough, difficulty_breathing, runny_nose]
+  expect: [bronchiolitis, croup]
