@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, MedicalRecord } from "@/lib/api";
 import { usePatient } from "@/lib/patient-context";
+import { EmptyState } from "../_components/States";
 
 export default function Records() {
   const { selected } = usePatient();
@@ -114,7 +115,7 @@ export default function Records() {
 
           <h2 className="font-semibold mb-2">History for {loaded}</h2>
           {records.length === 0 ? (
-            <div className="text-sm text-subtext">No records yet for this patient.</div>
+            <EmptyState>No records yet for this patient.</EmptyState>
           ) : (
             <div className="space-y-2">
               {records

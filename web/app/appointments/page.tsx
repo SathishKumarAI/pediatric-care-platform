@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { api, Appointment, Doctor } from "@/lib/api";
 import { usePatient } from "@/lib/patient-context";
+import { EmptyState } from "../_components/States";
 
 export default function Appointments() {
   const { selected } = usePatient();
@@ -68,7 +69,7 @@ export default function Appointments() {
       </div>
 
       <h2 className="font-semibold mb-2">Your appointments</h2>
-      {appts.length === 0 && <div className="text-sm text-subtext">None yet.</div>}
+      {appts.length === 0 && <EmptyState>No appointments yet.</EmptyState>}
       <div className="space-y-2">
         {appts.map((a) => (
           <div key={a.id} className="flex justify-between rounded-lg border border-surface0 bg-mantle p-3 text-sm">

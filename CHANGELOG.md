@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Shared loading / empty / error UI components with accessibility roles + retry, applied across doctors, records, appointments, and patients pages (PCP-6).
 - Symptom checker can save a result (triage + top predictions) to the active child's medical record (PCP-5).
 - Patient / child profiles (PCP-4): `POST`/`GET /patients`, `GET /patients/{id}` with persisted profiles and a computed `age_months`. New `/patients` (Children) page; a client-side active-child context (localStorage) now drives appointments (replaces hardcoded `p1`), the records subject, and the symptom-checker age. Spec at `specs/patients.md`.
 - Frontend testing: Vitest + Testing Library (api-client + Doctors-page tests, run in CI via `npm run test`) and Playwright e2e smoke (`web/e2e/smoke.spec.ts`, `npm run test:e2e`) (PCP-3).

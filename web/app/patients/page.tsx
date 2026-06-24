@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { api, Sex } from "@/lib/api";
 import { usePatient } from "@/lib/patient-context";
+import { EmptyState, ErrorBanner } from "../_components/States";
 
 export default function Patients() {
   const { patients, selected, select, refresh, error } = usePatient();
@@ -31,7 +32,7 @@ export default function Patients() {
       <h1 className="text-2xl font-bold mb-1">Children</h1>
       <p className="text-subtext mb-6">Add a child and select who the app is for. The active child drives age and records elsewhere.</p>
 
-      {error && <div className="text-red text-sm mb-4">Backend: {error}</div>}
+      {error && <div className="mb-4"><ErrorBanner message={error} onRetry={refresh} /></div>}
 
       <div className="rounded-lg border border-surface0 bg-mantle p-4 mb-6 space-y-3">
         <div className="text-sm font-semibold">Add a child</div>
@@ -57,7 +58,7 @@ export default function Patients() {
 
       <h2 className="font-semibold mb-2">Your children</h2>
       {patients.length === 0 ? (
-        <div className="text-sm text-subtext">None yet. Add one above.</div>
+        <EmptyState>No children yet. Add one above.</EmptyState>
       ) : (
         <div className="space-y-2">
           {patients.map((p) => {

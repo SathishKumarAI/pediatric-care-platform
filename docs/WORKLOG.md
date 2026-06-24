@@ -2,6 +2,24 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 15:24 — PCP-6: Loading / empty / error states
+
+**Summary:** Added shared, accessible state components and applied them across
+fetching pages, so the UI no longer silently swallows errors or shows bare text.
+
+**Changes:**
+- `web/app/_components/States.tsx` — `Loading` (role=status), `EmptyState`, `ErrorBanner` (role=alert + Retry).
+- Doctors page now shows loading + error(retry) + empty. Records/appointments/patients use `EmptyState`; patients surfaces errors via `ErrorBanner`.
+- `web/app/__tests__/states.test.tsx` — 3 tests (7 web tests total).
+
+**Decisions:**
+- One shared components file so states evolve in one place (skeletons, retry, a11y) per the ui-ux-spec component backlog.
+
+**Verification:** Vitest 7/7; `next build` clean (10 routes).
+
+**Follow-ups:**
+- [ ] PCP-7 — form validation + inline field errors.
+
 ## 2026-06-24 15:18 — PCP-5: Save symptom result to record
 
 **Summary:** The symptom checker can now persist a result into the active
