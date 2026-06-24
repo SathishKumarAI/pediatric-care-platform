@@ -39,6 +39,34 @@ export default function Appointments() {
     }
   }
 
+  async function cancel(id: string) {
+    setMsg(null);
+    try {
+      await api.patchAppointment(id, { status: "cancelled" });
+      refresh();
+    } catch (e) {
+      setMsg({ kind: "err", text: (e as Error).message });
+    }
+  }
+
+  async function reschedule(id: string) {
+    const next = window.prompt("New date & time (YYYY-MM-DDTHH:MM):");
+    if (!next) return;
+    const when = new Date(next);
+    if (isNaN(when.getTime())) {
+      setMsg({ kind: "err", text: "Couldn't parse that date/time." });
+      return;
+    }
+    setMsg(null);
+    try {
+      await api.patchAppointment(id, { start: when.toISOString() });
+      setMsg({ kind: "ok", text: "Appointment rescheduled." });
+      refresh();
+    } catch (e) {
+      setMsg({ kind: "err", text: (e as Error).message });
+    }
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-1">Appointments</h1>
@@ -78,9 +106,25 @@ export default function Appointments() {
       {appts.length === 0 && <EmptyState>No appointments yet.</EmptyState>}
       <div className="space-y-2">
         {appts.map((a) => (
-          <div key={a.id} className="flex justify-between rounded-lg border border-surface0 bg-mantle p-3 text-sm">
-            <span>{new Date(a.start).toLocaleString()} · {docs.find((d) => d.id === a.doctor_id)?.name ?? a.doctor_id}</span>
-            <span className="text-green">{a.status}</span>
+          <div key={a.id} className="flex items-center justify-between rounded-lg border border-surface0 bg-mantle p-3 text-sm">
+            <span className={a.status === "cancelled" ? "text-subtext line-through" : ""}>
+              {new Date(a.start).toLocaleString()} · {docs.find((d) => d.id === a.doctor_id)?.name ?? a.doctor_id}
+            </span>
+            <span className="flex items-center gap-2">
+              <span className={a.status === "cancelled" ? "text-red" : "text-green"}>{a.status}</span>
+              {a.status === "booked" && (
+                <>
+                  <button onClick={() => reschedule(a.id)}
+                    className="rounded border border-surface1 px-2 py-0.5 text-xs text-subtext hover:text-text">
+                    Reschedule
+                  </button>
+                  <button onClick={() => cancel(a.id)}
+                    className="rounded border border-red/50 px-2 py-0.5 text-xs text-red hover:bg-surface0">
+                    Cancel
+                  </button>
+                </>
+              )}
+            </span>
           </div>
         ))}
       </div>

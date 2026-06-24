@@ -62,20 +62,40 @@ class InMemoryStore:
     def get_patient(self, patient_id: str) -> Patient | None:
         return self.patients.get(patient_id)
 
-    def create_appointment(self, data: AppointmentCreate) -> Appointment:
-        if self._conflict(data):
+    def get_doctor(self, doctor_id: str) -> Doctor | None:
+        return self.doctors.get(doctor_id)
+
+    def _guard(self, doctor_id: str, start, exclude_id: str | None = None) -> None:
+        doc = self.doctors.get(doctor_id)
+        day = start.strftime("%a")
+        if doc and doc.available_days and day not in doc.available_days:
+            raise ValueError(f"Doctor not available on {day}")
+        if any(
+            a.doctor_id == doctor_id and a.start == start
+            and a.status == AppointmentStatus.booked and a.id != exclude_id
+            for a in self.appointments.values()
+        ):
             raise ValueError("Doctor already booked at that time")
+
+    def create_appointment(self, data: AppointmentCreate) -> Appointment:
+        self._guard(data.doctor_id, data.start)
         appt = Appointment(id=_next("appt"), **data.model_dump())
         self.appointments[appt.id] = appt
         return appt
 
-    def _conflict(self, data: AppointmentCreate) -> bool:
-        return any(
-            a.doctor_id == data.doctor_id
-            and a.start == data.start
-            and a.status == AppointmentStatus.booked
-            for a in self.appointments.values()
-        )
+    def update_appointment(self, appt_id: str, status=None, start=None) -> Appointment:
+        appt = self.appointments.get(appt_id)
+        if appt is None:
+            raise KeyError(appt_id)
+        updates: dict = {}
+        if start is not None:
+            self._guard(appt.doctor_id, start, exclude_id=appt_id)
+            updates["start"] = start
+        if status is not None:
+            updates["status"] = status
+        appt = appt.model_copy(update=updates)
+        self.appointments[appt_id] = appt
+        return appt
 
     def list_appointments(self, patient_id: str | None = None) -> list[Appointment]:
         out = list(self.appointments.values())
@@ -136,9 +156,29 @@ class SqliteStore:
         r = self.conn.execute("SELECT * FROM patients WHERE id=?", (patient_id,)).fetchone()
         return self._patient_from_row(r) if r else None
 
-    def create_appointment(self, data: AppointmentCreate) -> Appointment:
-        if self._conflict(data):
+    def get_doctor(self, doctor_id: str) -> Doctor | None:
+        r = self.conn.execute("SELECT * FROM doctors WHERE id=?", (doctor_id,)).fetchone()
+        return (
+            Doctor(id=r["id"], name=r["name"], specialty=r["specialty"],
+                   available_days=json.loads(r["available_days"]))
+            if r else None
+        )
+
+    def _guard(self, doctor_id: str, start, exclude_id: str | None = None) -> None:
+        doc = self.get_doctor(doctor_id)
+        day = start.strftime("%a")
+        if doc and doc.available_days and day not in doc.available_days:
+            raise ValueError(f"Doctor not available on {day}")
+        row = self.conn.execute(
+            "SELECT 1 FROM appointments WHERE doctor_id=? AND start=? AND status='booked'"
+            " AND id != ? LIMIT 1",
+            (doctor_id, start.isoformat(), exclude_id or ""),
+        ).fetchone()
+        if row is not None:
             raise ValueError("Doctor already booked at that time")
+
+    def create_appointment(self, data: AppointmentCreate) -> Appointment:
+        self._guard(data.doctor_id, data.start)
         appt = Appointment(id=f"appt-{uuid.uuid4().hex[:8]}", **data.model_dump())
         self.conn.execute(
             "INSERT INTO appointments (id, patient_id, doctor_id, start, reason, status)"
@@ -149,12 +189,23 @@ class SqliteStore:
         self.conn.commit()
         return appt
 
-    def _conflict(self, data: AppointmentCreate) -> bool:
-        row = self.conn.execute(
-            "SELECT 1 FROM appointments WHERE doctor_id=? AND start=? AND status=? LIMIT 1",
-            (data.doctor_id, data.start.isoformat(), AppointmentStatus.booked.value),
-        ).fetchone()
-        return row is not None
+    def update_appointment(self, appt_id: str, status=None, start=None) -> Appointment:
+        r = self.conn.execute("SELECT * FROM appointments WHERE id=?", (appt_id,)).fetchone()
+        if r is None:
+            raise KeyError(appt_id)
+        appt = Appointment(id=r["id"], patient_id=r["patient_id"], doctor_id=r["doctor_id"],
+                           start=r["start"], reason=r["reason"], status=r["status"])
+        new_start = appt.start
+        if start is not None:
+            self._guard(appt.doctor_id, start, exclude_id=appt_id)
+            new_start = start
+        new_status = status if status is not None else appt.status
+        self.conn.execute(
+            "UPDATE appointments SET start=?, status=? WHERE id=?",
+            (new_start.isoformat(), new_status.value if hasattr(new_status, "value") else new_status, appt_id),
+        )
+        self.conn.commit()
+        return appt.model_copy(update={"start": new_start, "status": new_status})
 
     def list_appointments(self, patient_id: str | None = None) -> list[Appointment]:
         if patient_id:

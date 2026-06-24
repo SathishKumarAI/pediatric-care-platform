@@ -22,11 +22,18 @@ Parents/guardians booking a visit; (later) staff managing the schedule.
 - IDs are server-assigned (`appt-N`). Clients never set them.
 - Times are stored/compared as timezone-aware datetimes (ISO 8601).
 
+## Cancel / reschedule (PCP-9)
+- WHEN `PATCH /appointments/{id}` with `{status:"cancelled"}` THEN mark it cancelled (its slot frees up).
+- WHEN `PATCH /appointments/{id}` with a new `start` THEN move it, re-checking the conflict rule (409 on clash).
+- WHEN the id is unknown THEN 404.
+
+## Availability enforcement (PCP-10)
+- WHEN booking/rescheduling on a day the doctor does not work (`available_days`) THEN reject 409 with a clear reason.
+
 ## Out of scope (for now)
-- Cancel/reschedule endpoints and UI.
-- Doctor working-hours / availability enforcement beyond exact-slot conflict.
 - Reminders / notifications.
 - Recurring appointments.
+- Reschedule UI beyond a new-time prompt; granular working-hours (times, not just days).
 
 ## Data touched
 - Reads: store (doctors, appointments).

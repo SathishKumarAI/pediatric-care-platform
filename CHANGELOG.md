@@ -4,8 +4,12 @@ All notable changes to this project are documented here. Format follows [Keep a 
 
 ## [Unreleased]
 
+### Added
+- Appointment cancel / reschedule: `PATCH /appointments/{id}` (cancel frees the slot; reschedule re-checks conflicts) with cancel/reschedule buttons in the UI (PCP-9).
+- Doctor availability enforcement: booking or rescheduling on a day the doctor doesn't work is rejected with 409 (PCP-10).
+
 ### Planned
-- PCP-8 Auth & accounts (signup/login/roles) — start of v0.5 Clinical depth.
+- PCP-8 Auth & accounts (signup/login/roles) — v0.5 Clinical depth.
 - Wire Chroma + RAG over clinical guidelines.
 - Swap the weighted-overlap predictor for a trained GNN behind the existing interface.
 - Implement `app/security.py` compliance controls (consent, encryption, audit, retention, RBAC, erasure).

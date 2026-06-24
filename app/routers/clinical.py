@@ -9,6 +9,7 @@ from fastapi import APIRouter, HTTPException
 from ..schemas import (
     Appointment,
     AppointmentCreate,
+    AppointmentUpdate,
     Doctor,
     MedicalRecord,
     Patient,
@@ -55,6 +56,18 @@ def book(data: AppointmentCreate) -> Appointment:
 @router.get("/appointments", response_model=list[Appointment])
 def appointments(patient_id: str | None = None) -> list[Appointment]:
     return get_store().list_appointments(patient_id)
+
+
+@router.patch("/appointments/{appt_id}", response_model=Appointment)
+def update_appointment(appt_id: str, data: AppointmentUpdate) -> Appointment:
+    if data.status is None and data.start is None:
+        raise HTTPException(status_code=422, detail="Provide status and/or start")
+    try:
+        return get_store().update_appointment(appt_id, status=data.status, start=data.start)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=f"No appointment '{appt_id}'") from e
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
 
 
 @router.get("/records/{subject}", response_model=list[MedicalRecord])

@@ -42,10 +42,48 @@ def test_graph_unknown_node_404():
 
 
 def test_appointment_conflict():
-    slot = {"patient_id": "p1", "doctor_id": "doc-1", "start": "2030-01-01T09:00:00Z"}
+    # 2030-01-04 is a Friday — doc-1 works Mon/Wed/Fri.
+    slot = {"patient_id": "p1", "doctor_id": "doc-1", "start": "2030-01-04T09:00:00Z"}
     assert client.post("/appointments", json=slot).status_code == 201
     dup = {**slot, "patient_id": "p2"}
     assert client.post("/appointments", json=dup).status_code == 409
+
+
+def test_appointment_rejected_on_unavailable_day():
+    # 2030-01-01 is a Tuesday — doc-1 does not work Tuesdays.
+    r = client.post("/appointments", json={
+        "patient_id": "p1", "doctor_id": "doc-1", "start": "2030-01-01T09:00:00Z",
+    })
+    assert r.status_code == 409
+    assert "not available" in r.json()["detail"].lower()
+
+
+def test_appointment_cancel_frees_slot():
+    slot = {"patient_id": "p9", "doctor_id": "doc-1", "start": "2030-01-11T10:00:00Z"}  # Friday
+    appt = client.post("/appointments", json=slot).json()
+    cancelled = client.patch(f"/appointments/{appt['id']}", json={"status": "cancelled"})
+    assert cancelled.status_code == 200
+    assert cancelled.json()["status"] == "cancelled"
+    # slot is free again
+    assert client.post("/appointments", json=slot).status_code == 201
+
+
+def test_appointment_reschedule_and_conflict():
+    a = client.post("/appointments", json={
+        "patient_id": "p10", "doctor_id": "doc-2", "start": "2030-01-08T09:00:00Z",  # Tuesday, doc-2 works Tue/Thu
+    }).json()
+    moved = client.patch(f"/appointments/{a['id']}", json={"start": "2030-01-10T09:00:00Z"})  # Thursday
+    assert moved.status_code == 200
+    assert moved.json()["start"].startswith("2030-01-10")
+    # booking the now-vacated original slot works
+    assert client.post("/appointments", json={
+        "patient_id": "p11", "doctor_id": "doc-2", "start": "2030-01-08T09:00:00Z",
+    }).status_code == 201
+
+
+def test_appointment_update_unknown_404_and_empty_422():
+    assert client.patch("/appointments/appt-nope", json={"status": "cancelled"}).status_code == 404
+    assert client.patch("/appointments/appt-anything", json={}).status_code == 422
 
 
 def test_doctors_seeded():

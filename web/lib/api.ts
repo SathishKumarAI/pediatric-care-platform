@@ -108,6 +108,12 @@ export const api = {
       `/appointments${patient_id ? `?patient_id=${patient_id}` : ""}`,
     ),
 
+  patchAppointment: (id: string, body: { status?: Appointment["status"]; start?: string }) =>
+    req<Appointment>(`/appointments/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+
   book: (patient_id: string, doctor_id: string, start: string, reason?: string) =>
     req<Appointment>("/appointments", {
       method: "POST",

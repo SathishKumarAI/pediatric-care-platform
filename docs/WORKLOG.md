@@ -2,6 +2,27 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 15:40 — PCP-9 + PCP-10: cancel/reschedule + availability
+
+**Summary:** Started v0.5. Added appointment cancel/reschedule and doctor
+working-day availability enforcement, shared across both store backends.
+
+**Changes:**
+- `app/schemas.py` — `AppointmentUpdate` (status/start). `app/routers/clinical.py` — `PATCH /appointments/{id}` (404 unknown, 409 conflict/availability, 422 empty).
+- `app/services/store.py` — `_guard()` (availability via `available_days` + slot conflict, excludes self on reschedule), `update_appointment()`, `get_doctor()` in both `InMemoryStore` and `SqliteStore`.
+- `web/app/appointments/page.tsx` — Cancel + Reschedule buttons; cancelled rows struck through. `web/lib/api.ts` — `patchAppointment`.
+- `tests/test_api.py` — cancel-frees-slot, reschedule+conflict, unavailable-day 409, 404/422; fixed the conflict test to use a working day. 19 backend tests.
+- `specs/appointments.md` — cancel/reschedule/availability acceptance criteria.
+
+**Decisions:**
+- Availability granularity = day-of-week (`available_days`), matching the seed data; per-hour working hours deferred.
+- Cancelled appointments free their slot (conflict check ignores non-booked).
+
+**Verification:** backend 19/19; Vitest 9/9; ruff clean; eval 100%; `next build` clean.
+
+**Follow-ups:**
+- [ ] PCP-11 growth charts; PCP-8 auth.
+
 ## 2026-06-24 15:30 — PCP-7 + v0.2.0 release
 
 **Summary:** Added form validation with inline errors, completing the v0.2

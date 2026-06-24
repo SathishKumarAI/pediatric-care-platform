@@ -4,7 +4,7 @@
 > [`roadmap.md`](roadmap.md) + [`feature-backlog.md`](feature-backlog.md).
 > Status: `todo` · `in-progress` · `blocked` · `done`. Newest tickets appended; statuses edited in place.
 
-**Current focus:** PCP-8 — Auth & accounts (start of v0.5)
+**Current focus:** PCP-11 — Growth percentile charts (then PCP-8 auth)
 
 **Milestone:** ✅ v0.2 Foundations COMPLETE (PCP-1…7) — tagged v0.2.0. Next: v0.5 Clinical depth.
 
@@ -22,8 +22,6 @@
 | ID | Title | Status | Priority | Depends on |
 |----|-------|--------|----------|------------|
 | PCP-8 | Auth & accounts (signup/login/roles) | todo | Core | PCP-1 |
-| PCP-9 | Appointment cancel / reschedule | todo | Growing | PCP-1 |
-| PCP-10 | Doctor availability / working-hours enforcement | todo | Growing | PCP-1 |
 | PCP-11 | Growth percentile charts | todo | Growing | PCP-4 |
 | PCP-12 | Neo4j-backed knowledge graph | todo | Growing | — |
 | PCP-13 | Real ML model swap-in (replace overlap scorer) | todo | Heavy | eval harness |
@@ -47,3 +45,5 @@
 | PCP-5 | Symptom checker: save result to record | done | 2026-06-24 — "Save to record" writes a triage+predictions summary to the active child's record |
 | PCP-6 | Loading / empty / error states across pages | done | 2026-06-24 — shared Loading/EmptyState/ErrorBanner (a11y roles + retry) applied to doctors/records/appointments/patients; 3 tests |
 | PCP-7 | Form validation + inline errors | done | 2026-06-24 — inline field errors on patients form (name + no future DOB) and appointment past-time guard; 2 tests (9 web total) |
+| PCP-9 | Appointment cancel / reschedule | done | 2026-06-24 — `PATCH /appointments/{id}`; cancel frees slot, reschedule re-checks conflict; UI cancel/reschedule buttons; tests |
+| PCP-10 | Doctor availability enforcement | done | 2026-06-24 — booking/reschedule on a non-working day rejected 409; enforced in both stores; tests |

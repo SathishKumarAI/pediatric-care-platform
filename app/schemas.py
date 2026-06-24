@@ -107,6 +107,12 @@ class Appointment(AppointmentCreate):
     status: AppointmentStatus = AppointmentStatus.booked
 
 
+class AppointmentUpdate(BaseModel):
+    """Cancel (status) or reschedule (start). Both optional; at least one."""
+    status: AppointmentStatus | None = None
+    start: datetime | None = None
+
+
 class MedicalRecord(BaseModel):
     id: str
     subject: str  # patient id (FHIR-style)
