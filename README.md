@@ -161,10 +161,27 @@ pediatric-care-platform/
 ├── web/                       # Next.js 15 frontend
 │   ├── lib/api.ts             # typed API client
 │   └── src-tauri/             # Tauri v2 desktop config
-├── docs/                      # architecture.md, merge-rationale.md, specs/
+├── specs/                     # one Feature Spec per feature
+├── docs/                      # full doc set — see docs/README.md (catalog)
 ├── Dockerfile · docker-compose.yml · Makefile · pyproject.toml
 └── README.md · FEATURES.md · CHANGELOG.md · CONTRIBUTING.md · GLOSSARY.md · CLAUDE.md
 ```
+
+---
+
+## Documentation
+
+Full catalog with priority tiers: **[`docs/README.md`](docs/README.md)**.
+
+| Area | Start here |
+|---|---|
+| Product & scope | [`docs/PRD.md`](docs/PRD.md) · [`docs/roadmap.md`](docs/roadmap.md) · [`docs/feature-backlog.md`](docs/feature-backlog.md) |
+| UI / UX | [`docs/ui-ux-spec.md`](docs/ui-ux-spec.md) |
+| Engineering | [`docs/architecture.md`](docs/architecture.md) · [`docs/data-model.md`](docs/data-model.md) · [`docs/api-reference.md`](docs/api-reference.md) · [`docs/adr/`](docs/adr/) |
+| Quality | [`docs/test-strategy.md`](docs/test-strategy.md) · [`docs/definition-of-done.md`](docs/definition-of-done.md) |
+| Specs | [`specs/`](specs/) — one per feature |
+| Security & compliance | [`SECURITY.md`](SECURITY.md) · [`docs/threat-model.md`](docs/threat-model.md) · [`docs/privacy-compliance.md`](docs/privacy-compliance.md) · [`docs/incident-response.md`](docs/incident-response.md) |
+| Operations | [`docs/deployment.md`](docs/deployment.md) · [`docs/runbook.md`](docs/runbook.md) · [`docs/release-process.md`](docs/release-process.md) · [`docs/monitoring-observability.md`](docs/monitoring-observability.md) · [`docs/disaster-recovery.md`](docs/disaster-recovery.md) · [`docs/accessibility.md`](docs/accessibility.md) |
 
 ---
 
