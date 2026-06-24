@@ -5,6 +5,9 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- **Visual redesign** to a modern healthcare-SaaS look: light clinical theme, top bar + icon sidebar, polished dashboard (stat cards + quick actions), and shared UI primitives (Card/Button/Badge/Stat/Icon).
+- **Field parity with the original repos:** expanded Patient (last_name, blood_type, guardian_phone, email, phone, allergies, photo_url, notes), Doctor (phone, email, photo_url, bio, license_id, rating, years_experience), and MedicalRecord (doctor_id, diagnosis, prescription); richer forms/cards; additive SQLite migration for existing DBs.
+- `docs/original-repo-parity.md` — exhaustive field + feature inventory of the original Pediatrics/Medical-Research repos with build status and a parity backlog (PCP-19…49).
 - Compliance: append-only audit log (every write recorded with actor/action/resource/status via middleware; admin `GET /audit`) and consent capture (`POST /consent`, `GET /consent/{subject}`) (PCP-14b). Field-level encryption remains under PCP-14.
 - Release CI (PCP-16a): `.github/workflows/release.yml` builds Tauri desktop installers across Linux/macOS/Windows and drafts a GitHub release on a `v*` tag (via `tauri-action`). Code-signing, notarization, and auto-update require certs/keys (repo secrets) and remain under PCP-16.
 - RBAC enforcement (PCP-14a): flag-gated by `REQUIRE_AUTH` (off for the open demo). When on, write endpoints (patients, appointments, records) require a valid bearer token; record creation is limited to `doctor`/`admin`/`guardian`. Returns 401 (unauth) / 403 (wrong role). Reads stay open. `require_roles()` dependency.

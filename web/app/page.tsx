@@ -2,17 +2,22 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
+import { usePatient } from "@/lib/patient-context";
+import { Card, Icon, PageHeader, Stat } from "./_components/ui";
 
-const CARDS = [
-  { href: "/patients", title: "Children", desc: "Add a child and set the active profile.", emoji: "🧒" },
-  { href: "/symptom-checker", title: "Symptom Checker", desc: "AI decision support over a symptom→disease knowledge graph.", emoji: "🧠" },
-  { href: "/appointments", title: "Appointments", desc: "Book and view visits with conflict detection.", emoji: "📅" },
-  { href: "/doctors", title: "Doctors", desc: "Browse pediatricians and availability.", emoji: "👩‍⚕️" },
-  { href: "/records", title: "Medical Records", desc: "View and add a patient's clinical notes.", emoji: "📋" },
-  { href: "/stages", title: "Growth Stages", desc: "Developmental milestones and red flags by age.", emoji: "📈" },
+const ACTIONS = [
+  { href: "/symptom-checker", title: "Symptom Checker", desc: "AI decision support over a symptom→disease knowledge graph.", icon: "brain" },
+  { href: "/appointments", title: "Appointments", desc: "Book and manage visits with conflict detection.", icon: "calendar" },
+  { href: "/patients", title: "Children", desc: "Add a child and set the active profile.", icon: "child" },
+  { href: "/doctors", title: "Doctors", desc: "Browse pediatricians and availability.", icon: "doctor" },
+  { href: "/records", title: "Medical Records", desc: "View and add a patient's clinical notes.", icon: "file" },
+  { href: "/stages", title: "Growth Stages", desc: "Developmental milestones and red flags by age.", icon: "chart" },
 ];
 
 export default function Dashboard() {
+  const { selected, patients } = usePatient();
+  const { user } = useAuth();
   const [health, setHealth] = useState<Record<string, unknown> | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -22,38 +27,45 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-1">Pediatric Care Platform</h1>
-      <p className="text-subtext mb-6">
-        Clinical workflows from <em>Pediatrics</em> + AI/knowledge-graph from{" "}
-        <em>Medical-Research</em>, merged into one desktop app.
-      </p>
+      <PageHeader
+        title="Welcome to PedCare"
+        subtitle="Clinical workflows + AI decision support, in one place."
+      />
 
-      <div className="mb-6 rounded-lg border border-surface0 bg-mantle px-4 py-3 text-sm">
-        {err ? (
-          <span className="text-red">Backend unreachable: {err} — start it with <code>uvicorn app.main:app --reload</code></span>
-        ) : health ? (
-          <span className="text-green">
-            ● Backend {String(health.status)} · provider {String(health.provider)} · {String(health.diseases)} diseases in graph
-          </span>
-        ) : (
-          <span className="text-subtext">Checking backend…</span>
-        )}
+      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Stat icon="heart" label="Backend"
+          value={err ? <span className="text-red text-base">offline</span> : <span className="text-green">{health ? "online" : "…"}</span>} />
+        <Stat icon="brain" label="Diseases in graph" value={(health?.diseases as number) ?? "—"} />
+        <Stat icon="child" label="Children" value={patients.length} href="/patients" />
+        <Stat icon="doctor" label="Active child" value={selected ? `${selected.age_months}mo` : "—"} href="/patients" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {CARDS.map((c) => (
-          <Link key={c.href} href={c.href}
-            className="rounded-lg border border-surface0 bg-mantle p-5 hover:border-mauve transition-colors">
-            <div className="text-2xl mb-2">{c.emoji}</div>
-            <div className="font-semibold mb-1">{c.title}</div>
-            <div className="text-sm text-subtext">{c.desc}</div>
+      {err && (
+        <Card className="mb-6 p-4 text-sm text-red">
+          Backend unreachable: {err}. Start it with <code className="rounded bg-surface0 px-1">uvicorn app.main:app --reload</code>.
+        </Card>
+      )}
+      {!user && (
+        <Card className="mb-6 flex items-center justify-between p-4">
+          <span className="text-sm text-subtext">You're browsing as a guest.</span>
+          <Link href="/login" className="text-sm font-medium text-mauve hover:underline">Sign in →</Link>
+        </Card>
+      )}
+
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-subtext">Quick actions</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {ACTIONS.map((a) => (
+          <Link key={a.href} href={a.href}>
+            <Card className="group h-full p-5 transition hover:border-mauve/40">
+              <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-mauve/10 text-mauve">
+                <Icon name={a.icon} />
+              </span>
+              <div className="font-semibold text-text group-hover:text-mauve">{a.title}</div>
+              <div className="mt-1 text-sm text-subtext">{a.desc}</div>
+            </Card>
           </Link>
         ))}
       </div>
-
-      <p className="mt-8 text-xs text-subtext">
-        ⚠️ Decision-support prototype on synthetic data. Not a medical device, not for real diagnosis.
-      </p>
     </div>
   );
 }

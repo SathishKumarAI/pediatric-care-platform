@@ -4,7 +4,7 @@
 > [`roadmap.md`](roadmap.md) + [`feature-backlog.md`](feature-backlog.md).
 > Status: `todo` · `in-progress` · `blocked` · `done`. Newest tickets appended; statuses edited in place.
 
-**Current focus:** PCP-12 — Neo4j-backed knowledge graph (infra-bound; see wrap-up)
+**Current focus:** Original-repo parity — UI redesign ✅ + field expansion ✅ done; next: high-value modules (chat/notifications/profiles). Full list in [original-repo-parity.md](original-repo-parity.md).
 
 **Milestone:** ✅ v0.2 Foundations COMPLETE (PCP-1…7) — tagged v0.2.0. Next: v0.5 Clinical depth.
 
@@ -24,6 +24,23 @@
 | PCP-12 | Neo4j-backed knowledge graph | todo | Growing | — |
 | PCP-13 | Real ML model swap-in (replace overlap scorer) | todo | Heavy | eval harness |
 | PCP-18 | Anthropometric measurements + WHO/CDC percentile curves | todo | Growing | PCP-4 |
+
+## To do — Original-repo parity (PCP-19…49)
+The original Pediatrics + Medical-Research apps had many more modules/fields.
+Full inventory + status in **[original-repo-parity.md](original-repo-parity.md)**. High-value next:
+| ID | Title | Priority |
+|----|-------|----------|
+| PCP-34 | Chat / messaging (doctor↔patient) | Growing |
+| PCP-35 | Notifications (push / in-app) | Growing |
+| PCP-37 | Profile screens + photo upload | Growing |
+| PCP-32 | Doctor ratings / reviews (AppReview) | Growing |
+| PCP-27 | Appointment calendar view | Growing |
+| PCP-36 | Payments / billing / invoices | Growing |
+| PCP-22/23/24 | Password reset / change / email verification | Core |
+| PCP-21 | Google OAuth sign-in | Growing |
+| PCP-45/46 | Admin + Research dashboards | Heavy |
+| PCP-48 | Light/dark theme toggle | Growing |
+| (more) | see original-repo-parity.md | — |
 
 ## To do — v1.0 Production (Heavy gates)
 | ID | Title | Status | Priority | Depends on |
@@ -52,3 +69,5 @@
 | PCP-14a | RBAC enforcement (role-gated writes) | done | 2026-06-24 — flag-gated `REQUIRE_AUTH`; `require_roles()` dep on patient/appointment/record writes (records limited to doctor/admin/guardian); 401/403; toggle test. Consent/audit/encryption remain in PCP-14 |
 | PCP-16a | Release CI to build desktop installers | done | 2026-06-24 — `.github/workflows/release.yml` (tauri-action, 3-OS matrix, draft release on `v*` tag). Code-signing/notarization/auto-update need certs → remain in PCP-16 |
 | PCP-14b | Audit log + consent capture | done | 2026-06-24 — append-only `audit_log` (every write recorded via middleware w/ actor), admin `GET /audit`; `consents` table + `POST /consent`, `GET /consent/{subject}`. Field-encryption remains in PCP-14 |
+| PCP-UI | Healthcare-SaaS visual redesign | done | 2026-06-24 — light clinical theme, top bar + icon sidebar, polished dashboard (stat cards + quick actions), shared UI primitives (Card/Button/Badge/Stat/Icon) |
+| PCP-FIELDS | Data-model field parity w/ original repos | done | 2026-06-24 — Patient (+last_name, blood_type, guardian_phone, email, phone, allergies, notes), Doctor (+phone, email, bio, license_id, rating, years_experience), MedicalRecord (+doctor_id, diagnosis, prescription); DB migration; richer forms/cards. See original-repo-parity.md |

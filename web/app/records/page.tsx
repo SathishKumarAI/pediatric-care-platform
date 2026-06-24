@@ -10,6 +10,8 @@ export default function Records() {
   const [loaded, setLoaded] = useState<string | null>(null);
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [note, setNote] = useState("");
+  const [diagnosis, setDiagnosis] = useState("");
+  const [prescription, setPrescription] = useState("");
   const [attachments, setAttachments] = useState("");
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -47,12 +49,16 @@ export default function Records() {
         subject: loaded,
         recorded: new Date().toISOString(),
         note: note.trim(),
+        diagnosis: diagnosis.trim() || undefined,
+        prescription: prescription.trim() || undefined,
         attachments: attachments
           .split(",")
           .map((a) => a.trim())
           .filter(Boolean),
       });
       setNote("");
+      setDiagnosis("");
+      setPrescription("");
       setAttachments("");
       setMsg({ kind: "ok", text: "Record added." });
       load(loaded);
@@ -98,6 +104,20 @@ export default function Records() {
               rows={3}
               className="w-full rounded-md border border-surface0 bg-base px-3 py-2 text-sm"
             />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <input
+                placeholder="Diagnosis (optional)"
+                value={diagnosis}
+                onChange={(e) => setDiagnosis(e.target.value)}
+                className="w-full rounded-md border border-surface0 bg-base px-3 py-1.5 text-sm"
+              />
+              <input
+                placeholder="Prescription (optional)"
+                value={prescription}
+                onChange={(e) => setPrescription(e.target.value)}
+                className="w-full rounded-md border border-surface0 bg-base px-3 py-1.5 text-sm"
+              />
+            </div>
             <input
               placeholder="Attachment refs (comma-separated, optional)"
               value={attachments}
@@ -125,6 +145,8 @@ export default function Records() {
                   <div key={r.id} className="rounded-lg border border-surface0 bg-mantle p-3">
                     <div className="text-xs text-subtext">{new Date(r.recorded).toLocaleString()}</div>
                     <div className="text-sm mt-1">{r.note}</div>
+                    {r.diagnosis && <div className="mt-1 text-xs"><span className="text-subtext">Diagnosis: </span>{r.diagnosis}</div>}
+                    {r.prescription && <div className="text-xs"><span className="text-subtext">Rx: </span>{r.prescription}</div>}
                     {r.attachments.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1">
                         {r.attachments.map((a) => (

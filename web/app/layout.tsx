@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AccountBadge } from "./_components/AccountBadge";
 import { ActivePatient } from "./_components/ActivePatient";
+import { Icon } from "./_components/ui";
 import { AuthProvider } from "@/lib/auth-context";
 import { PatientProvider } from "@/lib/patient-context";
 import "./globals.css";
@@ -12,13 +13,13 @@ export const metadata: Metadata = {
 };
 
 const NAV = [
-  { href: "/", label: "Dashboard" },
-  { href: "/patients", label: "Children" },
-  { href: "/symptom-checker", label: "Symptom Checker" },
-  { href: "/appointments", label: "Appointments" },
-  { href: "/doctors", label: "Doctors" },
-  { href: "/records", label: "Records" },
-  { href: "/stages", label: "Growth Stages" },
+  { href: "/", label: "Dashboard", icon: "dashboard" },
+  { href: "/patients", label: "Children", icon: "child" },
+  { href: "/symptom-checker", label: "Symptom Checker", icon: "brain" },
+  { href: "/appointments", label: "Appointments", icon: "calendar" },
+  { href: "/doctors", label: "Doctors", icon: "doctor" },
+  { href: "/records", label: "Records", icon: "file" },
+  { href: "/stages", label: "Growth Stages", icon: "chart" },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -26,30 +27,53 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <AuthProvider>
-        <PatientProvider>
-          <div className="flex min-h-screen">
-            <aside className="w-60 shrink-0 bg-mantle border-r border-surface0 p-5">
-              <div className="mb-8">
-                <div className="text-lg font-bold text-mauve">🩺 PedCare</div>
-                <div className="text-xs text-subtext">Care + AI, merged</div>
+          <PatientProvider>
+            <div className="flex min-h-screen">
+              {/* Sidebar */}
+              <aside className="flex w-64 shrink-0 flex-col border-r border-surface0 bg-mantle">
+                <div className="flex items-center gap-2 px-6 py-5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve text-white">
+                    <Icon name="heart" className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <div className="text-sm font-semibold leading-tight text-text">PedCare</div>
+                    <div className="text-[11px] text-subtext">Care + AI platform</div>
+                  </div>
+                </div>
+
+                <nav className="flex flex-1 flex-col gap-0.5 px-3">
+                  {NAV.map((n) => (
+                    <Link
+                      key={n.href}
+                      href={n.href}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-subtext transition hover:bg-surface0 hover:text-text"
+                    >
+                      <Icon name={n.icon} className="h-[18px] w-[18px]" />
+                      {n.label}
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="space-y-2 border-t border-surface0 p-3">
+                  <ActivePatient />
+                  <AccountBadge />
+                </div>
+              </aside>
+
+              {/* Main */}
+              <div className="flex flex-1 flex-col">
+                <header className="flex h-14 items-center justify-between border-b border-surface0 bg-mantle px-8">
+                  <span className="text-sm text-subtext">Pediatric Care Platform</span>
+                  <span className="rounded-full bg-yellow/10 px-3 py-1 text-xs font-medium text-yellow">
+                    Synthetic data · not a medical device
+                  </span>
+                </header>
+                <main className="flex-1 overflow-y-auto px-8 py-8">
+                  <div className="mx-auto max-w-5xl">{children}</div>
+                </main>
               </div>
-              <nav className="flex flex-col gap-1">
-                {NAV.map((n) => (
-                  <Link
-                    key={n.href}
-                    href={n.href}
-                    className="rounded-md px-3 py-2 text-sm text-subtext hover:bg-surface0 hover:text-text transition-colors"
-                  >
-                    {n.label}
-                  </Link>
-                ))}
-              </nav>
-              <ActivePatient />
-              <AccountBadge />
-            </aside>
-            <main className="flex-1 p-8 max-w-4xl">{children}</main>
-          </div>
-        </PatientProvider>
+            </div>
+          </PatientProvider>
         </AuthProvider>
       </body>
     </html>

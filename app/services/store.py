@@ -25,10 +25,64 @@ from . import db
 
 _SEED_DOCTORS = [
     Doctor(id="doc-1", name="Dr. Aisha Rahman", specialty="General Pediatrics",
-           available_days=["Mon", "Wed", "Fri"]),
+           available_days=["Mon", "Wed", "Fri"], phone="+1-555-0101",
+           email="aisha.rahman@pedcare.example", rating=4.8, years_experience=12,
+           bio="General pediatrician focused on early childhood and preventive care."),
     Doctor(id="doc-2", name="Dr. Leo Martins", specialty="Pediatric Pulmonology",
-           available_days=["Tue", "Thu"]),
+           available_days=["Tue", "Thu"], phone="+1-555-0102",
+           email="leo.martins@pedcare.example", rating=4.6, years_experience=9,
+           bio="Pediatric pulmonologist; asthma, bronchiolitis, and chronic cough."),
 ]
+
+_DOC_COLS = ["id", "name", "specialty", "available_days", "phone", "email",
+             "photo_url", "bio", "license_id", "rating", "years_experience"]
+_PAT_COLS = ["id", "name", "last_name", "birth_date", "sex", "blood_type",
+             "guardian_name", "guardian_phone", "email", "phone", "allergies",
+             "photo_url", "notes"]
+_REC_COLS = ["id", "subject", "recorded", "note", "doctor_id", "diagnosis",
+             "prescription", "attachments"]
+
+
+def _placeholders(cols: list[str]) -> str:
+    return f"({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))})"
+
+
+def _doc_from_row(r) -> Doctor:
+    return Doctor(id=r["id"], name=r["name"], specialty=r["specialty"],
+                  available_days=json.loads(r["available_days"]),
+                  phone=r["phone"], email=r["email"], photo_url=r["photo_url"],
+                  bio=r["bio"], license_id=r["license_id"], rating=r["rating"],
+                  years_experience=r["years_experience"])
+
+
+def _doc_values(d: Doctor) -> list:
+    return [d.id, d.name, d.specialty, json.dumps(d.available_days), d.phone,
+            d.email, d.photo_url, d.bio, d.license_id, d.rating, d.years_experience]
+
+
+def _pat_from_row(r) -> Patient:
+    return Patient(id=r["id"], name=r["name"], last_name=r["last_name"],
+                   birth_date=r["birth_date"], sex=r["sex"], blood_type=r["blood_type"],
+                   guardian_name=r["guardian_name"], guardian_phone=r["guardian_phone"],
+                   email=r["email"], phone=r["phone"], allergies=r["allergies"],
+                   photo_url=r["photo_url"], notes=r["notes"])
+
+
+def _pat_values(p: Patient) -> list:
+    return [p.id, p.name, p.last_name, p.birth_date.isoformat(), p.sex.value,
+            p.blood_type, p.guardian_name, p.guardian_phone, p.email, p.phone,
+            p.allergies, p.photo_url, p.notes]
+
+
+def _rec_from_row(r) -> MedicalRecord:
+    return MedicalRecord(id=r["id"], subject=r["subject"], recorded=r["recorded"],
+                         note=r["note"], doctor_id=r["doctor_id"], diagnosis=r["diagnosis"],
+                         prescription=r["prescription"], attachments=json.loads(r["attachments"]))
+
+
+def _rec_values(rec: MedicalRecord) -> list:
+    return [rec.id, rec.subject, rec.recorded.isoformat(), rec.note, rec.doctor_id,
+            rec.diagnosis, rec.prescription, json.dumps(rec.attachments)]
 
 _ids = itertools.count(1)
 
@@ -121,48 +175,30 @@ class SqliteStore:
         if self.conn.execute("SELECT COUNT(*) FROM doctors").fetchone()[0]:
             return
         for d in _SEED_DOCTORS:
-            self.conn.execute(
-                "INSERT INTO doctors (id, name, specialty, available_days) VALUES (?,?,?,?)",
-                (d.id, d.name, d.specialty, json.dumps(d.available_days)),
-            )
+            self.conn.execute(f"INSERT INTO doctors {_placeholders(_DOC_COLS)}", _doc_values(d))
         self.conn.commit()
 
     def list_doctors(self) -> list[Doctor]:
         rows = self.conn.execute("SELECT * FROM doctors ORDER BY id").fetchall()
-        return [
-            Doctor(id=r["id"], name=r["name"], specialty=r["specialty"],
-                   available_days=json.loads(r["available_days"]))
-            for r in rows
-        ]
+        return [_doc_from_row(r) for r in rows]
 
     def create_patient(self, data: PatientCreate) -> Patient:
         pat = Patient(id=f"pat-{uuid.uuid4().hex[:8]}", **data.model_dump())
-        self.conn.execute(
-            "INSERT INTO patients (id, name, birth_date, sex, guardian_name) VALUES (?,?,?,?,?)",
-            (pat.id, pat.name, pat.birth_date.isoformat(), pat.sex.value, pat.guardian_name),
-        )
+        self.conn.execute(f"INSERT INTO patients {_placeholders(_PAT_COLS)}", _pat_values(pat))
         self.conn.commit()
         return pat
 
-    def _patient_from_row(self, r) -> Patient:
-        return Patient(id=r["id"], name=r["name"], birth_date=r["birth_date"],
-                       sex=r["sex"], guardian_name=r["guardian_name"])
-
     def list_patients(self) -> list[Patient]:
         rows = self.conn.execute("SELECT * FROM patients ORDER BY name").fetchall()
-        return [self._patient_from_row(r) for r in rows]
+        return [_pat_from_row(r) for r in rows]
 
     def get_patient(self, patient_id: str) -> Patient | None:
         r = self.conn.execute("SELECT * FROM patients WHERE id=?", (patient_id,)).fetchone()
-        return self._patient_from_row(r) if r else None
+        return _pat_from_row(r) if r else None
 
     def get_doctor(self, doctor_id: str) -> Doctor | None:
         r = self.conn.execute("SELECT * FROM doctors WHERE id=?", (doctor_id,)).fetchone()
-        return (
-            Doctor(id=r["id"], name=r["name"], specialty=r["specialty"],
-                   available_days=json.loads(r["available_days"]))
-            if r else None
-        )
+        return _doc_from_row(r) if r else None
 
     def _guard(self, doctor_id: str, start, exclude_id: str | None = None) -> None:
         doc = self.get_doctor(doctor_id)
@@ -221,12 +257,7 @@ class SqliteStore:
         ]
 
     def add_record(self, rec: MedicalRecord) -> MedicalRecord:
-        self.conn.execute(
-            "INSERT OR REPLACE INTO records (id, subject, recorded, note, attachments)"
-            " VALUES (?,?,?,?,?)",
-            (rec.id, rec.subject, rec.recorded.isoformat(), rec.note,
-             json.dumps(rec.attachments)),
-        )
+        self.conn.execute(f"INSERT OR REPLACE INTO records {_placeholders(_REC_COLS)}", _rec_values(rec))
         self.conn.commit()
         return rec
 
@@ -234,11 +265,7 @@ class SqliteStore:
         rows = self.conn.execute(
             "SELECT * FROM records WHERE subject=? ORDER BY recorded DESC", (subject,)
         ).fetchall()
-        return [
-            MedicalRecord(id=r["id"], subject=r["subject"], recorded=r["recorded"],
-                          note=r["note"], attachments=json.loads(r["attachments"]))
-            for r in rows
-        ]
+        return [_rec_from_row(r) for r in rows]
 
 
 Store = InMemoryStore  # backwards-compatible alias

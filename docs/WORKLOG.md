@@ -2,6 +2,25 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 17:05 — Redesign + field parity with original repos
+
+**Summary:** Acted on feedback that the app looked sparse and was missing
+fields/features from the originals. Did a healthcare-SaaS visual redesign,
+expanded the data models to match the original repos' fields, and saved a full
+original-repo parity inventory into the docs.
+
+**Changes:**
+- **Redesign:** light clinical theme (remapped tokens in `globals.css`), top bar + icon sidebar (`layout.tsx`), polished dashboard with stat cards + quick actions (`page.tsx`), shared UI primitives `web/app/_components/ui.tsx` (Card/Button/Badge/Stat/Icon/PageHeader/EmptyStateUI), refreshed ActivePatient/AccountBadge.
+- **Fields:** Patient (+last_name, blood_type, guardian_phone, email, phone, allergies, photo_url, notes), Doctor (+phone, email, photo_url, bio, license_id, rating, years_experience), MedicalRecord (+doctor_id, diagnosis, prescription). `app/services/db.py` additive migration so existing DBs gain the columns. Store CRUD reworked with column-list helpers. Richer Children form (full fields), Doctors cards (rating/experience/bio/contact), Records form (diagnosis/prescription).
+- **Docs:** new `docs/original-repo-parity.md` — exhaustive field + feature inventory of both source repos with status (✅/🟡/⬜) and ticket ids PCP-19…49; registered the parity backlog in `docs/TICKETS.md`; catalog updated.
+- Used the original repos as reference (deep-read `~/coding/Pediatrics/lib/**` and `~/coding/Medical-Research/**`).
+
+**Verification:** backend 27/27; web 11/11; ruff clean; `next build` clean (11 routes). Live preview confirmed via Chrome DevTools (dashboard + full Children form screenshotted).
+
+**Follow-ups:**
+- [ ] Build high-value parity modules: chat (PCP-34), notifications (PCP-35), profiles+photo (PCP-37), ratings (PCP-32), calendar (PCP-27), password reset/verify (PCP-22/24), OAuth (PCP-21), dark-mode toggle (PCP-48).
+- [ ] Photo upload for patient/doctor (fields exist, no upload UI yet).
+
 ## 2026-06-24 16:44 — PCP-14b: Audit log + consent
 
 **Summary:** Added persistent, append-only audit logging of all writes and a

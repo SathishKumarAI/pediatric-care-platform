@@ -106,9 +106,17 @@ class Sex(StrEnum):
 
 class PatientCreate(BaseModel):
     name: str = Field(..., min_length=1)
+    last_name: str | None = None
     birth_date: date
     sex: Sex = Sex.unknown
+    blood_type: str | None = None
     guardian_name: str | None = None
+    guardian_phone: str | None = None
+    email: str | None = None
+    phone: str | None = None
+    allergies: str | None = None
+    photo_url: str | None = None
+    notes: str | None = None
 
 
 class Patient(PatientCreate):
@@ -129,6 +137,13 @@ class Doctor(BaseModel):
     name: str
     specialty: str = "Pediatrics"
     available_days: list[str] = []
+    phone: str | None = None
+    email: str | None = None
+    photo_url: str | None = None
+    bio: str | None = None
+    license_id: str | None = None
+    rating: float | None = None
+    years_experience: int | None = None
 
 
 class AppointmentStatus(StrEnum):
@@ -160,6 +175,9 @@ class MedicalRecord(BaseModel):
     subject: str  # patient id (FHIR-style)
     recorded: datetime
     note: str
+    doctor_id: str | None = None
+    diagnosis: str | None = None
+    prescription: str | None = None
     attachments: list[str] = []
 
 

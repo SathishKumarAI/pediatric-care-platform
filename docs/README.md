@@ -18,6 +18,7 @@ Every doc for the Pediatric Care Platform, grouped by job and priority tier.
 | [`PRD.md`](PRD.md) | Product requirements: vision, personas, journeys, scope, metrics | Growing |
 | [`roadmap.md`](roadmap.md) | Phased path v0.1 → v1.0 with exit criteria | Core |
 | [`feature-backlog.md`](feature-backlog.md) | Exhaustive granular feature inventory (origin/priority/status) | Core |
+| [`original-repo-parity.md`](original-repo-parity.md) | Full field + feature parity vs the original Pediatrics/Medical-Research repos | Core |
 | [`ui-ux-spec.md`](ui-ux-spec.md) | Design system, screen + component inventory, UX flows, a11y, UI backlog | Core |
 | [`merge-rationale.md`](merge-rationale.md) | Why/how the two parent projects were merged | Core |
 | [`adr/`](adr/) | Architecture Decision Records (the 4 hard choices) | Growing |

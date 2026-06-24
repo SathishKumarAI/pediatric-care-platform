@@ -25,7 +25,8 @@ function renderPage() {
 describe("patients form validation", () => {
   it("blocks submit and shows errors when fields are empty", () => {
     renderPage();
-    fireEvent.click(screen.getByRole("button", { name: "Add child" }));
+    fireEvent.click(screen.getByRole("button", { name: "+ Add child" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save child" }));
     expect(screen.getByText("Name is required")).toBeInTheDocument();
     expect(screen.getByText("Birth date is required")).toBeInTheDocument();
     expect(createPatient).not.toHaveBeenCalled();
@@ -33,9 +34,10 @@ describe("patients form validation", () => {
 
   it("rejects a future birth date", () => {
     renderPage();
-    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Kid" } });
+    fireEvent.click(screen.getByRole("button", { name: "+ Add child" }));
+    fireEvent.change(screen.getByLabelText("First name"), { target: { value: "Kid" } });
     fireEvent.change(screen.getByLabelText("Birth date"), { target: { value: "2999-01-01" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add child" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save child" }));
     expect(screen.getByText("Birth date can't be in the future")).toBeInTheDocument();
     expect(createPatient).not.toHaveBeenCalled();
   });

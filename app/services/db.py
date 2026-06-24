@@ -14,7 +14,9 @@ CREATE TABLE IF NOT EXISTS doctors (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     specialty TEXT NOT NULL,
-    available_days TEXT NOT NULL DEFAULT '[]'
+    available_days TEXT NOT NULL DEFAULT '[]',
+    phone TEXT, email TEXT, photo_url TEXT, bio TEXT,
+    license_id TEXT, rating REAL, years_experience INTEGER
 );
 CREATE TABLE IF NOT EXISTS appointments (
     id TEXT PRIMARY KEY,
@@ -57,14 +59,17 @@ CREATE TABLE IF NOT EXISTS patients (
     name TEXT NOT NULL,
     birth_date TEXT NOT NULL,
     sex TEXT NOT NULL DEFAULT 'unknown',
-    guardian_name TEXT
+    guardian_name TEXT,
+    last_name TEXT, blood_type TEXT, guardian_phone TEXT,
+    email TEXT, phone TEXT, allergies TEXT, photo_url TEXT, notes TEXT
 );
 CREATE TABLE IF NOT EXISTS records (
     id TEXT PRIMARY KEY,
     subject TEXT NOT NULL,
     recorded TEXT NOT NULL,
     note TEXT NOT NULL,
-    attachments TEXT NOT NULL DEFAULT '[]'
+    attachments TEXT NOT NULL DEFAULT '[]',
+    doctor_id TEXT, diagnosis TEXT, prescription TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_appt_doctor_start ON appointments(doctor_id, start);
 CREATE INDEX IF NOT EXISTS idx_records_subject ON records(subject);
@@ -76,11 +81,37 @@ def sqlite_path(database_url: str) -> str:
     return database_url.removeprefix("sqlite:///")
 
 
+# Additive migrations for DBs created before these columns existed.
+# Each entry: (table, column, definition). Re-running is safe (errors ignored).
+_MIGRATIONS = [
+    ("doctors", "phone", "TEXT"), ("doctors", "email", "TEXT"),
+    ("doctors", "photo_url", "TEXT"), ("doctors", "bio", "TEXT"),
+    ("doctors", "license_id", "TEXT"), ("doctors", "rating", "REAL"),
+    ("doctors", "years_experience", "INTEGER"),
+    ("patients", "last_name", "TEXT"), ("patients", "blood_type", "TEXT"),
+    ("patients", "guardian_phone", "TEXT"), ("patients", "email", "TEXT"),
+    ("patients", "phone", "TEXT"), ("patients", "allergies", "TEXT"),
+    ("patients", "photo_url", "TEXT"), ("patients", "notes", "TEXT"),
+    ("records", "doctor_id", "TEXT"), ("records", "diagnosis", "TEXT"),
+    ("records", "prescription", "TEXT"),
+]
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    for table, column, decl in _MIGRATIONS:
+        try:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")
+        except sqlite3.OperationalError:
+            pass  # column already exists
+    conn.commit()
+
+
 def connect(path: str) -> sqlite3.Connection:
     if path not in (":memory:", ""):
         Path(path).parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    _migrate(conn)
     conn.commit()
     return conn

@@ -22,6 +22,13 @@ export interface Doctor {
   name: string;
   specialty: string;
   available_days: string[];
+  phone?: string | null;
+  email?: string | null;
+  photo_url?: string | null;
+  bio?: string | null;
+  license_id?: string | null;
+  rating?: number | null;
+  years_experience?: number | null;
 }
 
 export interface Appointment {
@@ -51,10 +58,32 @@ export type Sex = "male" | "female" | "other" | "unknown";
 export interface Patient {
   id: string;
   name: string;
+  last_name?: string | null;
   birth_date: string; // ISO date
   sex: Sex;
+  blood_type?: string | null;
   guardian_name?: string | null;
+  guardian_phone?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  allergies?: string | null;
+  photo_url?: string | null;
+  notes?: string | null;
   age_months: number;
+}
+
+export interface PatientInput {
+  name: string;
+  last_name?: string;
+  birth_date: string;
+  sex?: Sex;
+  blood_type?: string;
+  guardian_name?: string;
+  guardian_phone?: string;
+  email?: string;
+  phone?: string;
+  allergies?: string;
+  notes?: string;
 }
 
 export interface MedicalRecord {
@@ -62,6 +91,9 @@ export interface MedicalRecord {
   subject: string;
   recorded: string;
   note: string;
+  doctor_id?: string | null;
+  diagnosis?: string | null;
+  prescription?: string | null;
   attachments: string[];
 }
 
@@ -130,12 +162,7 @@ export const api = {
 
   patient: (id: string) => req<Patient>(`/patients/${id}`),
 
-  createPatient: (data: {
-    name: string;
-    birth_date: string;
-    sex?: Sex;
-    guardian_name?: string;
-  }) =>
+  createPatient: (data: PatientInput) =>
     req<Patient>("/patients", {
       method: "POST",
       body: JSON.stringify({ sex: "unknown", ...data }),
@@ -167,6 +194,9 @@ export const api = {
     subject: string;
     recorded: string;
     note: string;
+    doctor_id?: string;
+    diagnosis?: string;
+    prescription?: string;
     attachments?: string[];
   }) =>
     req<MedicalRecord>("/records", {
