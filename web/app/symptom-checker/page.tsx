@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api, SymptomResponse, Triage } from "@/lib/api";
+import { usePatient } from "@/lib/patient-context";
 
 const COMMON = [
   "fever", "cough", "sore throat", "ear pain", "runny nose", "vomiting",
@@ -14,11 +15,18 @@ const TRIAGE_STYLE: Record<Triage, string> = {
 };
 
 export default function SymptomChecker() {
+  const { selected: activeChild } = usePatient();
   const [selected, setSelected] = useState<string[]>([]);
   const [age, setAge] = useState<string>("");
   const [result, setResult] = useState<SymptomResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  // Prefill age from the active child when one is selected and age is blank.
+  useEffect(() => {
+    if (activeChild && age === "") setAge(String(activeChild.age_months));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeChild]);
 
   const toggle = (s: string) =>
     setSelected((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));

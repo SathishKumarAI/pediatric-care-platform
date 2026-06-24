@@ -82,6 +82,26 @@ def test_records_empty_for_unknown_subject():
     assert client.get("/records/nobody-here").json() == []
 
 
+def test_patient_create_list_get_and_age():
+    r = client.post("/patients", json={
+        "name": "Baby Tan", "birth_date": "2025-06-24", "sex": "female",
+    })
+    assert r.status_code == 201
+    pat = r.json()
+    assert pat["id"].startswith("pat-")
+    assert pat["age_months"] >= 0  # computed from birth_date
+    assert any(p["id"] == pat["id"] for p in client.get("/patients").json())
+    assert client.get(f"/patients/{pat['id']}").json()["name"] == "Baby Tan"
+
+
+def test_patient_unknown_404():
+    assert client.get("/patients/pat-nope").status_code == 404
+
+
+def test_patient_missing_fields_422():
+    assert client.post("/patients", json={"name": "No DOB"}).status_code == 422
+
+
 def test_persistence_survives_store_restart():
     """A record written to the SQLite store is still there after the in-process
     singleton is rebuilt (simulating a service restart)."""

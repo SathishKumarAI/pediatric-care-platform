@@ -2,6 +2,28 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 15:12 — PCP-4: Patient/child profiles + active-child context
+
+**Summary:** Added child profiles end-to-end and a selected-child context that
+replaces the hardcoded `p1` and the manual age/subject entry across the app.
+
+**Changes:**
+- `specs/patients.md` — feature spec (spec-first).
+- Backend: `Patient`/`PatientCreate`/`Sex` schemas with computed `age_months`; `patients` table; store methods (both impls); `POST`/`GET /patients`, `GET /patients/{id}`. 3 new tests (15 total).
+- Frontend: `web/lib/patient-context.tsx` (localStorage-persisted active child), `/patients` page, sidebar active-child badge, dashboard card.
+- Wiring: appointments book/list use the active child; records subject defaults to it; symptom-checker age prefills from `age_months`.
+- Lint: converted `Role`/`Sex`/`AppointmentStatus` to `StrEnum` and `datetime.UTC` — project-wide `ruff` now clean (was failing on pre-existing UP042/UP017).
+
+**Decisions:**
+- Active-child state is client-only (localStorage); API stays stateless. Ownership/auth deferred to PCP-8.
+- `age_months` computed server-side from `birth_date` so it's always current.
+
+**Verification:** `pytest` 15/15; `ruff` clean; Vitest 4/4; `next build` clean (10 routes incl. `/patients`).
+
+**Follow-ups:**
+- [ ] PCP-5 — save a symptom-check result into the active child's record.
+- [ ] Add a Vitest test for the patients page / context.
+
 ## 2026-06-24 15:02 — PCP-3: Frontend test setup
 
 **Summary:** Stood up the frontend test stack — Vitest + Testing Library for

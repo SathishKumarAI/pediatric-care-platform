@@ -18,6 +18,8 @@ from ..schemas import (
     AppointmentStatus,
     Doctor,
     MedicalRecord,
+    Patient,
+    PatientCreate,
 )
 from . import db
 
@@ -43,9 +45,22 @@ class InMemoryStore:
         self.doctors: dict[str, Doctor] = {d.id: d for d in _SEED_DOCTORS}
         self.appointments: dict[str, Appointment] = {}
         self.records: dict[str, MedicalRecord] = {}
+        self.patients: dict[str, Patient] = {}
 
     def list_doctors(self) -> list[Doctor]:
         return list(self.doctors.values())
+
+    # --- patients ---
+    def create_patient(self, data: PatientCreate) -> Patient:
+        pat = Patient(id=f"pat-{uuid.uuid4().hex[:8]}", **data.model_dump())
+        self.patients[pat.id] = pat
+        return pat
+
+    def list_patients(self) -> list[Patient]:
+        return list(self.patients.values())
+
+    def get_patient(self, patient_id: str) -> Patient | None:
+        return self.patients.get(patient_id)
 
     def create_appointment(self, data: AppointmentCreate) -> Appointment:
         if self._conflict(data):
@@ -99,6 +114,27 @@ class SqliteStore:
                    available_days=json.loads(r["available_days"]))
             for r in rows
         ]
+
+    def create_patient(self, data: PatientCreate) -> Patient:
+        pat = Patient(id=f"pat-{uuid.uuid4().hex[:8]}", **data.model_dump())
+        self.conn.execute(
+            "INSERT INTO patients (id, name, birth_date, sex, guardian_name) VALUES (?,?,?,?,?)",
+            (pat.id, pat.name, pat.birth_date.isoformat(), pat.sex.value, pat.guardian_name),
+        )
+        self.conn.commit()
+        return pat
+
+    def _patient_from_row(self, r) -> Patient:
+        return Patient(id=r["id"], name=r["name"], birth_date=r["birth_date"],
+                       sex=r["sex"], guardian_name=r["guardian_name"])
+
+    def list_patients(self) -> list[Patient]:
+        rows = self.conn.execute("SELECT * FROM patients ORDER BY name").fetchall()
+        return [self._patient_from_row(r) for r in rows]
+
+    def get_patient(self, patient_id: str) -> Patient | None:
+        r = self.conn.execute("SELECT * FROM patients WHERE id=?", (patient_id,)).fetchone()
+        return self._patient_from_row(r) if r else None
 
     def create_appointment(self, data: AppointmentCreate) -> Appointment:
         if self._conflict(data):

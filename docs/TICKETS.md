@@ -4,7 +4,7 @@
 > [`roadmap.md`](roadmap.md) + [`feature-backlog.md`](feature-backlog.md).
 > Status: `todo` · `in-progress` · `blocked` · `done`. Newest tickets appended; statuses edited in place.
 
-**Current focus:** PCP-4 — Patient/child profile model + context
+**Current focus:** PCP-5 — Symptom checker: save result to record
 
 **Milestone:** v0.2 Foundations (persistence, records UI, patient context, frontend tests)
 
@@ -13,12 +13,11 @@
 ## In progress
 | ID | Title | Status | Spec | Notes |
 |----|-------|--------|------|-------|
-| — | (none) | — | — | next: PCP-4 |
+| — | (none) | — | — | next: PCP-5 |
 
 ## To do — v0.2 Foundations
 | ID | Title | Status | Priority | Depends on |
 |----|-------|--------|----------|------------|
-| PCP-4 | Patient/child profile model + context | todo | Core | PCP-1 |
 | PCP-5 | Symptom checker: save result to record | todo | Growing | PCP-2, PCP-4 |
 | PCP-6 | Loading / empty / error states across pages | todo | Core | — |
 | PCP-7 | Form validation + inline errors | todo | Core | — |
@@ -48,3 +47,4 @@
 | PCP-2 | Medical Records UI page | done | 2026-06-24 — `/records` page + API client methods + 2 backend tests |
 | PCP-1 | Persistent store (SQLite via DATABASE_URL) | done | 2026-06-24 — InMemory/Sqlite stores behind one interface; records+appointments persist; test DB isolated; 12 tests |
 | PCP-3 | Frontend test setup (Vitest + Playwright) | done | 2026-06-24 — Vitest (4 tests: api client + Doctors page) in CI; Playwright e2e smoke; gitignore + test-strategy updated |
+| PCP-4 | Patient/child profile model + context | done | 2026-06-24 — Patient CRUD + persistence + computed age_months; `/patients` page; selected-child context (localStorage) drives appointments/records/symptom-checker; spec; 15 backend tests |

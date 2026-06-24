@@ -33,6 +33,17 @@ export interface Appointment {
   status: "booked" | "cancelled" | "fulfilled";
 }
 
+export type Sex = "male" | "female" | "other" | "unknown";
+
+export interface Patient {
+  id: string;
+  name: string;
+  birth_date: string; // ISO date
+  sex: Sex;
+  guardian_name?: string | null;
+  age_months: number;
+}
+
 export interface MedicalRecord {
   id: string;
   subject: string;
@@ -76,6 +87,21 @@ export const api = {
     }),
 
   doctors: () => req<Doctor[]>("/doctors"),
+
+  patients: () => req<Patient[]>("/patients"),
+
+  patient: (id: string) => req<Patient>(`/patients/${id}`),
+
+  createPatient: (data: {
+    name: string;
+    birth_date: string;
+    sex?: Sex;
+    guardian_name?: string;
+  }) =>
+    req<Patient>("/patients", {
+      method: "POST",
+      body: JSON.stringify({ sex: "unknown", ...data }),
+    }),
 
   appointments: (patient_id?: string) =>
     req<Appointment[]>(

@@ -24,6 +24,13 @@ CREATE TABLE IF NOT EXISTS appointments (
     reason TEXT,
     status TEXT NOT NULL DEFAULT 'booked'
 );
+CREATE TABLE IF NOT EXISTS patients (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    birth_date TEXT NOT NULL,
+    sex TEXT NOT NULL DEFAULT 'unknown',
+    guardian_name TEXT
+);
 CREATE TABLE IF NOT EXISTS records (
     id TEXT PRIMARY KEY,
     subject TEXT NOT NULL,

@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Patient / child profiles (PCP-4): `POST`/`GET /patients`, `GET /patients/{id}` with persisted profiles and a computed `age_months`. New `/patients` (Children) page; a client-side active-child context (localStorage) now drives appointments (replaces hardcoded `p1`), the records subject, and the symptom-checker age. Spec at `specs/patients.md`.
 - Frontend testing: Vitest + Testing Library (api-client + Doctors-page tests, run in CI via `npm run test`) and Playwright e2e smoke (`web/e2e/smoke.spec.ts`, `npm run test:e2e`) (PCP-3).
 - Persistent SQLite store (`app/services/{db,store}.py`): records and appointments now survive restart. `InMemoryStore` and `SqliteStore` sit behind one interface, selected by `DATABASE_URL` (PCP-1).
 - Test isolation via `tests/conftest.py` (throwaway per-session SQLite DB) + persistence-across-restart test (now 12 passing).
@@ -15,6 +16,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 
 ### Changed
 - `app/services/store.py` refactored into `InMemoryStore` + `SqliteStore` (was a single in-memory class). `Store` kept as a backwards-compatible alias.
+- Enums (`Role`, `Sex`, `AppointmentStatus`) now use `enum.StrEnum`; `datetime.UTC` alias — project-wide `ruff check` clean.
 
 ### Planned
 - Wire Chroma + RAG over clinical guidelines.

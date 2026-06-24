@@ -2,7 +2,7 @@
 appointments, records, growth stages."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException
 
@@ -11,6 +11,8 @@ from ..schemas import (
     AppointmentCreate,
     Doctor,
     MedicalRecord,
+    Patient,
+    PatientCreate,
     StageResponse,
 )
 from ..services.stages import stage_for
@@ -22,6 +24,24 @@ router = APIRouter(tags=["clinical"])
 @router.get("/doctors", response_model=list[Doctor])
 def doctors() -> list[Doctor]:
     return get_store().list_doctors()
+
+
+@router.post("/patients", response_model=Patient, status_code=201)
+def create_patient(data: PatientCreate) -> Patient:
+    return get_store().create_patient(data)
+
+
+@router.get("/patients", response_model=list[Patient])
+def patients() -> list[Patient]:
+    return get_store().list_patients()
+
+
+@router.get("/patients/{patient_id}", response_model=Patient)
+def patient(patient_id: str) -> Patient:
+    p = get_store().get_patient(patient_id)
+    if p is None:
+        raise HTTPException(status_code=404, detail=f"No patient '{patient_id}'")
+    return p
 
 
 @router.post("/appointments", response_model=Appointment, status_code=201)
@@ -55,4 +75,4 @@ def stages(age_months: int) -> StageResponse:
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)

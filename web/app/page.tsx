@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 
 const CARDS = [
+  { href: "/patients", title: "Children", desc: "Add a child and set the active profile.", emoji: "🧒" },
   { href: "/symptom-checker", title: "Symptom Checker", desc: "AI decision support over a symptom→disease knowledge graph.", emoji: "🧠" },
   { href: "/appointments", title: "Appointments", desc: "Book and view visits with conflict detection.", emoji: "📅" },
   { href: "/doctors", title: "Doctors", desc: "Browse pediatricians and availability.", emoji: "👩‍⚕️" },

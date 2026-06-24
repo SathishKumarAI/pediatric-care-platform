@@ -1,8 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api, MedicalRecord } from "@/lib/api";
+import { usePatient } from "@/lib/patient-context";
 
 export default function Records() {
+  const { selected } = usePatient();
   const [subject, setSubject] = useState("");
   const [loaded, setLoaded] = useState<string | null>(null);
   const [records, setRecords] = useState<MedicalRecord[]>([]);
@@ -25,6 +27,15 @@ export default function Records() {
       setLoading(false);
     }
   }
+
+  // Default the subject to the active child on first load.
+  useEffect(() => {
+    if (selected && !loaded) {
+      setSubject(selected.id);
+      load(selected.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
 
   async function add() {
     if (!loaded || !note.trim()) return;

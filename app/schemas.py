@@ -5,10 +5,10 @@ Medical-Research compliance/interoperability notes.
 """
 from __future__ import annotations
 
-from datetime import datetime
-from enum import Enum
+from datetime import date, datetime
+from enum import StrEnum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 
 
 # --------------------------------------------------------------------------- #
@@ -47,12 +47,39 @@ class GraphNeighbors(BaseModel):
 # --------------------------------------------------------------------------- #
 # Clinical workflows  (from Pediatrics app)
 # --------------------------------------------------------------------------- #
-class Role(str, Enum):
+class Role(StrEnum):
     patient = "patient"
     guardian = "guardian"
     doctor = "doctor"
     admin = "admin"
     researcher = "researcher"
+
+
+class Sex(StrEnum):
+    male = "male"
+    female = "female"
+    other = "other"
+    unknown = "unknown"
+
+
+class PatientCreate(BaseModel):
+    name: str = Field(..., min_length=1)
+    birth_date: date
+    sex: Sex = Sex.unknown
+    guardian_name: str | None = None
+
+
+class Patient(PatientCreate):
+    id: str
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def age_months(self) -> int:
+        today = date.today()
+        months = (today.year - self.birth_date.year) * 12 + (today.month - self.birth_date.month)
+        if today.day < self.birth_date.day:
+            months -= 1
+        return max(0, months)
 
 
 class Doctor(BaseModel):
@@ -62,7 +89,7 @@ class Doctor(BaseModel):
     available_days: list[str] = []
 
 
-class AppointmentStatus(str, Enum):
+class AppointmentStatus(StrEnum):
     booked = "booked"
     cancelled = "cancelled"
     fulfilled = "fulfilled"
