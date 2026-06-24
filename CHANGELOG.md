@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Compliance: append-only audit log (every write recorded with actor/action/resource/status via middleware; admin `GET /audit`) and consent capture (`POST /consent`, `GET /consent/{subject}`) (PCP-14b). Field-level encryption remains under PCP-14.
 - Release CI (PCP-16a): `.github/workflows/release.yml` builds Tauri desktop installers across Linux/macOS/Windows and drafts a GitHub release on a `v*` tag (via `tauri-action`). Code-signing, notarization, and auto-update require certs/keys (repo secrets) and remain under PCP-16.
 - RBAC enforcement (PCP-14a): flag-gated by `REQUIRE_AUTH` (off for the open demo). When on, write endpoints (patients, appointments, records) require a valid bearer token; record creation is limited to `doctor`/`admin`/`guardian`. Returns 401 (unauth) / 403 (wrong role). Reads stay open. `require_roles()` dependency.
 - Observability (PCP-15a): request-timing middleware (`X-Response-Time-ms` header + per-request logs), in-process per-route counters, and a `GET /metrics` endpoint in Prometheus text format. (Distributed tracing / Sentry / dashboards remain under PCP-15.)

@@ -51,3 +51,4 @@
 | PCP-15a | Observability: request metrics + timing | done | 2026-06-24 — timing middleware (`X-Response-Time-ms`), in-process per-route counters, `GET /metrics` (Prometheus text). Tracing/Sentry/dashboards remain in PCP-15 |
 | PCP-14a | RBAC enforcement (role-gated writes) | done | 2026-06-24 — flag-gated `REQUIRE_AUTH`; `require_roles()` dep on patient/appointment/record writes (records limited to doctor/admin/guardian); 401/403; toggle test. Consent/audit/encryption remain in PCP-14 |
 | PCP-16a | Release CI to build desktop installers | done | 2026-06-24 — `.github/workflows/release.yml` (tauri-action, 3-OS matrix, draft release on `v*` tag). Code-signing/notarization/auto-update need certs → remain in PCP-16 |
+| PCP-14b | Audit log + consent capture | done | 2026-06-24 — append-only `audit_log` (every write recorded via middleware w/ actor), admin `GET /audit`; `consents` table + `POST /consent`, `GET /consent/{subject}`. Field-encryption remains in PCP-14 |

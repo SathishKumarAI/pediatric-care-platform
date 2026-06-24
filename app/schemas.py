@@ -55,6 +55,26 @@ class Role(StrEnum):
     researcher = "researcher"
 
 
+class AuditEntry(BaseModel):
+    id: str
+    ts: datetime
+    actor: str
+    action: str
+    resource: str
+    status: int
+
+
+class ConsentCreate(BaseModel):
+    subject: str
+    consent_type: str = Field(..., examples=["data_processing", "treatment"])
+    granted: bool = True
+
+
+class Consent(ConsentCreate):
+    id: str
+    ts: datetime
+
+
 class UserCreate(BaseModel):
     email: str = Field(..., min_length=3)
     password: str = Field(..., min_length=6)

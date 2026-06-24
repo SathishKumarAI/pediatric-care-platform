@@ -186,6 +186,20 @@ def test_auth_signup_validation_422():
     assert client.post("/auth/signup", json={"email": "a@b.co", "password": "short"}).status_code == 422
 
 
+def test_audit_log_records_writes():
+    client.post("/patients", json={"name": "Audited", "birth_date": "2024-02-02"})
+    entries = client.get("/audit").json()
+    assert any(e["action"] == "POST" and e["resource"] == "/patients" for e in entries)
+    assert all({"id", "ts", "actor", "action", "resource", "status"} <= e.keys() for e in entries)
+
+
+def test_consent_capture_and_list():
+    c = client.post("/consent", json={"subject": "patient-c", "consent_type": "data_processing", "granted": True})
+    assert c.status_code == 201
+    listed = client.get("/consent/patient-c").json()
+    assert listed and listed[0]["consent_type"] == "data_processing" and listed[0]["granted"] is True
+
+
 def test_rbac_open_by_default():
     # REQUIRE_AUTH is off in tests -> writes work without a token
     assert client.post("/patients", json={"name": "Open", "birth_date": "2024-01-01"}).status_code == 201

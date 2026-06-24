@@ -15,8 +15,12 @@ from fastapi.responses import PlainTextResponse
 from . import __version__
 from .config import get_settings
 from .observability import configure_logging, logger, metrics, now_ms
-from .routers import auth, clinical, intelligence
+from .routers import auth, clinical, compliance, intelligence
+from .services.auth import get_auth
+from .services.compliance import get_compliance
 from .services.knowledge_graph import get_graph
+
+_WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
 configure_logging()
 settings = get_settings()
@@ -44,12 +48,20 @@ async def observe(request: Request, call_next):
     metrics.record(request.method, route_path, response.status_code, dur)
     logger.info("%s %s -> %s %.1fms", request.method, route_path, response.status_code, dur)
     response.headers["X-Response-Time-ms"] = f"{dur:.1f}"
+
+    # Audit every write (HIPAA/GDPR). Actor resolved from the bearer token.
+    if request.method in _WRITE_METHODS:
+        token = (request.headers.get("authorization") or "")[7:].strip() or None
+        user = get_auth().user_for_token(token) if token else None
+        actor = user.email if user else "anonymous"
+        get_compliance().record_audit(actor, request.method, route_path, response.status_code)
     return response
 
 
 app.include_router(auth.router)
 app.include_router(intelligence.router)
 app.include_router(clinical.router)
+app.include_router(compliance.router)
 
 
 @app.get("/metrics", tags=["meta"], response_class=PlainTextResponse)

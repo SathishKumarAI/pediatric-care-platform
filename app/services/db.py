@@ -36,6 +36,22 @@ CREATE TABLE IF NOT EXISTS sessions (
     user_id TEXT NOT NULL,
     created TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS audit_log (
+    id TEXT PRIMARY KEY,
+    ts TEXT NOT NULL,
+    actor TEXT NOT NULL,
+    action TEXT NOT NULL,
+    resource TEXT NOT NULL,
+    status INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS consents (
+    id TEXT PRIMARY KEY,
+    subject TEXT NOT NULL,
+    consent_type TEXT NOT NULL,
+    granted INTEGER NOT NULL,
+    ts TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_consents_subject ON consents(subject);
 CREATE TABLE IF NOT EXISTS patients (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,

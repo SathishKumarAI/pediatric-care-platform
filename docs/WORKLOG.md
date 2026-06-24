@@ -2,6 +2,26 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 16:44 — PCP-14b: Audit log + consent
+
+**Summary:** Added persistent, append-only audit logging of all writes and a
+consent-capture API — two HIPAA/GDPR prerequisites.
+
+**Changes:**
+- `app/services/db.py` — `audit_log` + `consents` tables.
+- `app/services/compliance.py` — `ComplianceStore` (append-only `record_audit`/`list_audit`, `add_consent`/`list_consents`).
+- `app/main.py` — middleware records an audit row for every write (actor resolved from bearer token, else "anonymous").
+- `app/routers/compliance.py` — admin `GET /audit`; `POST /consent`, `GET /consent/{subject}`.
+- schemas `AuditEntry`/`Consent`/`ConsentCreate`; tests for audit + consent. 27 backend tests; ruff clean.
+
+**Decisions:**
+- Audit is append-only by contract (no update/delete methods). Field-level encryption (the remaining PCP-14 item) deferred.
+
+**Verification:** backend 27/27; ruff clean.
+
+**Follow-ups:**
+- [ ] PCP-18 measurement capture; PCP-14 field encryption; infra-bound 12/13/15/16.
+
 ## 2026-06-24 16:34 — PCP-16a: Release CI for desktop installers
 
 **Summary:** Added a tag-triggered CI workflow that builds Tauri installers for
