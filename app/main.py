@@ -8,12 +8,13 @@ Run: uvicorn app.main:app --reload
 """
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 from . import __version__
 from .config import get_settings
-from .observability import configure_logging
+from .observability import configure_logging, logger, metrics, now_ms
 from .routers import auth, clinical, intelligence
 from .services.knowledge_graph import get_graph
 
@@ -33,9 +34,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def observe(request: Request, call_next):
+    start = now_ms()
+    response = await call_next(request)
+    dur = now_ms() - start
+    route = request.scope.get("route")
+    route_path = getattr(route, "path", request.url.path)
+    metrics.record(request.method, route_path, response.status_code, dur)
+    logger.info("%s %s -> %s %.1fms", request.method, route_path, response.status_code, dur)
+    response.headers["X-Response-Time-ms"] = f"{dur:.1f}"
+    return response
+
+
 app.include_router(auth.router)
 app.include_router(intelligence.router)
 app.include_router(clinical.router)
+
+
+@app.get("/metrics", tags=["meta"], response_class=PlainTextResponse)
+def prometheus_metrics() -> str:
+    return metrics.prometheus()
 
 
 @app.get("/health", tags=["meta"])

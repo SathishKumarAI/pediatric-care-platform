@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Observability (PCP-15a): request-timing middleware (`X-Response-Time-ms` header + per-request logs), in-process per-route counters, and a `GET /metrics` endpoint in Prometheus text format. (Distributed tracing / Sentry / dashboards remain under PCP-15.)
 - Accessibility pass (PCP-17): global `:focus-visible` ring; symptom chips expose `aria-pressed` within a labeled `role="group"`; age inputs are label-associated; results announced via `aria-live`; errors use `role="alert"`.
 - Auth & accounts (PCP-8): `POST /auth/signup`, `POST /auth/login`, `GET /auth/me`, `POST /auth/logout`. PBKDF2-HMAC-SHA256 password hashing (stdlib) + opaque token sessions in a `sessions` table; `users` table; `Role`-typed accounts. New `/login` page, auth context, token-aware API client (sends `Authorization: Bearer`), and a sidebar account badge. `get_current_user` dependency is in place for RBAC (PCP-14). Spec at `specs/auth.md`.
 - Growth milestone timeline chart on the stages page — an SVG plotting milestones by age with a current-age marker; age prefills from the active child (PCP-11). (True height/weight percentile curves split out to PCP-18, which needs measurement capture + WHO/CDC reference data.)

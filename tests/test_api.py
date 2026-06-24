@@ -140,6 +140,14 @@ def test_patient_missing_fields_422():
     assert client.post("/patients", json={"name": "No DOB"}).status_code == 422
 
 
+def test_metrics_endpoint_and_timing_header():
+    r = client.get("/health")
+    assert "X-Response-Time-ms" in r.headers
+    m = client.get("/metrics")
+    assert m.status_code == 200
+    assert "pcp_requests_total" in m.text
+
+
 def test_auth_signup_login_me_flow():
     s = client.post("/auth/signup", json={"email": "Parent@Example.com", "password": "s3cret!"})
     assert s.status_code == 201

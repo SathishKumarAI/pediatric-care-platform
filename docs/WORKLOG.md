@@ -2,6 +2,25 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 16:16 — PCP-15a: Observability (metrics + timing)
+
+**Summary:** Added request-timing middleware, in-process per-route metrics, and
+a Prometheus-format `/metrics` endpoint — no new deps.
+
+**Changes:**
+- `app/observability.py` — `Metrics` (requests/errors/latency per route) + `now_ms`.
+- `app/main.py` — HTTP middleware records + logs timing, sets `X-Response-Time-ms`; `GET /metrics` returns Prometheus text.
+- `tests/test_api.py` — metrics/timing test (23 backend tests).
+
+**Decisions:**
+- Route-template keys (`/patients/{patient_id}`) avoid metric cardinality blowup.
+- In-process counters now; real Prometheus/OTel export + tracing/Sentry stay in PCP-15.
+
+**Verification:** backend 23/23; ruff clean.
+
+**Follow-ups:**
+- [ ] PCP-14 RBAC; PCP-12 Neo4j; PCP-13 ML; PCP-16 signing.
+
 ## 2026-06-24 16:08 — PCP-17: Accessibility pass
 
 **Summary:** Closed the high-priority a11y gaps from `docs/accessibility.md`.

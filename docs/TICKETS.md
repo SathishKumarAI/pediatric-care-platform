@@ -4,7 +4,7 @@
 > [`roadmap.md`](roadmap.md) + [`feature-backlog.md`](feature-backlog.md).
 > Status: `todo` · `in-progress` · `blocked` · `done`. Newest tickets appended; statuses edited in place.
 
-**Current focus:** PCP-15 — Observability (then PCP-14 RBAC, PCP-12 Neo4j, PCP-13 ML, PCP-16 signing)
+**Current focus:** PCP-14 — RBAC enforcement (then PCP-12 Neo4j, PCP-13 ML, PCP-16 signing)
 
 **Milestone:** ✅ v0.2 Foundations COMPLETE (PCP-1…7) — tagged v0.2.0. Next: v0.5 Clinical depth.
 
@@ -29,7 +29,7 @@
 | ID | Title | Status | Priority | Depends on |
 |----|-------|--------|----------|------------|
 | PCP-14 | Compliance controls: consent, audit, RBAC, encryption | todo | Heavy | PCP-1, PCP-8 |
-| PCP-15 | Observability: metrics, tracing, Sentry | todo | Heavy | — |
+| PCP-15 | Observability: tracing, Sentry, dashboards (metrics shipped in PCP-15a) | todo | Heavy | — |
 | PCP-16 | Desktop installer signing + auto-update | todo | Heavy | — |
 
 ## Done
@@ -48,3 +48,4 @@
 | PCP-11 | Growth milestone timeline chart | done | 2026-06-24 — SVG timeline of milestones by age + current-age marker on stages page (no chart lib); age prefills from active child. True percentile curves split out to PCP-18 |
 | PCP-8 | Auth & accounts (signup/login/roles) | done | 2026-06-24 — PBKDF2 password hashing + token sessions (`/auth/signup,login,me,logout`); `get_current_user` dep (RBAC-ready); `/login` page + auth context + token-aware client + sidebar account badge; spec; 22 backend + 10 web tests |
 | PCP-17 | WCAG 2.1 AA accessibility pass | done | 2026-06-24 — `:focus-visible` ring, chip `aria-pressed` + group, label associations, `aria-live` results, `role=alert` errors; a11y test; doc updated (remaining gaps noted) |
+| PCP-15a | Observability: request metrics + timing | done | 2026-06-24 — timing middleware (`X-Response-Time-ms`), in-process per-route counters, `GET /metrics` (Prometheus text). Tracing/Sentry/dashboards remain in PCP-15 |
