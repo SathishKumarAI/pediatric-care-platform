@@ -2,6 +2,28 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 14:55 — PCP-1: Persistent SQLite store
+
+**Summary:** Replaced the in-memory-only store with a persistent SQLite layer
+behind the same repository interface, so records and appointments survive a
+restart. Routers unchanged.
+
+**Changes:**
+- `app/services/db.py` — new: sqlite3 connection + schema (doctors/appointments/records), JSON-encoded lists, indexes.
+- `app/services/store.py` — split into `InMemoryStore` + `SqliteStore`; `get_store()` picks by `DATABASE_URL` (sqlite → persistent, default).
+- `tests/conftest.py` — new: throwaway per-session SQLite DB so tests start clean and never touch dev data.
+- `tests/test_api.py` — added persistence-across-restart test. 12 tests pass; eval still 100%.
+
+**Decisions:**
+- Kept both store implementations behind one interface (Repository Pattern) instead of forcing infra — in-memory still available for `DATABASE_URL` non-sqlite. Postgres is a later swap (same SQL shape; see data-model.md).
+- SQLite appointment IDs use a short uuid (not the in-memory counter) to avoid collisions across restarts.
+
+**Verification:** `pytest` 12/12; `ruff` clean; `eval/run_eval.py` 100% top-1/top-3.
+
+**Follow-ups:**
+- [ ] PCP-3 — frontend test setup (Vitest + Playwright).
+- [ ] PCP-4 — patient/child profile model (now unblocked by persistence).
+
 ## 2026-06-24 14:48 — PCP-2: Medical Records UI
 
 **Summary:** Started building from the docs. Set up the live ticket board

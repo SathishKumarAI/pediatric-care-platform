@@ -4,7 +4,7 @@
 > [`roadmap.md`](roadmap.md) + [`feature-backlog.md`](feature-backlog.md).
 > Status: `todo` · `in-progress` · `blocked` · `done`. Newest tickets appended; statuses edited in place.
 
-**Current focus:** PCP-1 — Persistent store (SQLite)
+**Current focus:** PCP-3 — Frontend test setup (Vitest + Playwright)
 
 **Milestone:** v0.2 Foundations (persistence, records UI, patient context, frontend tests)
 
@@ -13,12 +13,11 @@
 ## In progress
 | ID | Title | Status | Spec | Notes |
 |----|-------|--------|------|-------|
-| — | (none) | — | — | next: PCP-1 |
+| — | (none) | — | — | next: PCP-3 |
 
 ## To do — v0.2 Foundations
 | ID | Title | Status | Priority | Depends on |
 |----|-------|--------|----------|------------|
-| PCP-1 | Persistent store (SQLite via DATABASE_URL) | todo | Core | — |
 | PCP-3 | Frontend test setup (Vitest + Playwright) | todo | Core | — |
 | PCP-4 | Patient/child profile model + context | todo | Core | PCP-1 |
 | PCP-5 | Symptom checker: save result to record | todo | Growing | PCP-2, PCP-4 |
@@ -48,3 +47,4 @@
 |----|-------|--------|---------|
 | PCP-0 | Merged scaffold + backend + web + full docs | done | 2026-06-24 (v0.1.0) |
 | PCP-2 | Medical Records UI page | done | 2026-06-24 — `/records` page + API client methods + 2 backend tests |
+| PCP-1 | Persistent store (SQLite via DATABASE_URL) | done | 2026-06-24 — InMemory/Sqlite stores behind one interface; records+appointments persist; test DB isolated; 12 tests |

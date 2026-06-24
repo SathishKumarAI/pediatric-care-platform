@@ -80,3 +80,19 @@ def test_records_add_and_list_by_subject():
 
 def test_records_empty_for_unknown_subject():
     assert client.get("/records/nobody-here").json() == []
+
+
+def test_persistence_survives_store_restart():
+    """A record written to the SQLite store is still there after the in-process
+    singleton is rebuilt (simulating a service restart)."""
+    from app.services import store as store_mod
+
+    rec = {
+        "id": "rec-persist-1", "subject": "patient-persist",
+        "recorded": "2026-06-24T11:00:00Z", "note": "persist me", "attachments": [],
+    }
+    assert client.post("/records", json=rec).status_code == 201
+    # simulate a restart: drop the cached store so it reconnects to the same DB
+    store_mod._STORE = None
+    again = client.get("/records/patient-persist").json()
+    assert any(r["id"] == "rec-persist-1" for r in again)

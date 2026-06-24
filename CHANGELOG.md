@@ -5,10 +5,15 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Persistent SQLite store (`app/services/{db,store}.py`): records and appointments now survive restart. `InMemoryStore` and `SqliteStore` sit behind one interface, selected by `DATABASE_URL` (PCP-1).
+- Test isolation via `tests/conftest.py` (throwaway per-session SQLite DB) + persistence-across-restart test (now 12 passing).
 - Medical Records UI (`web/app/records/page.tsx`): view a patient's append-only records by ID and add clinical notes with optional attachment refs (PCP-2).
 - `records` / `addRecord` methods + `MedicalRecord` type in the typed API client.
-- Backend tests for `POST`/`GET /records` (now 11 passing).
+- Backend tests for `POST`/`GET /records`.
 - `docs/TICKETS.md` live build backlog; `docs/WORKLOG.md` append-only session log.
+
+### Changed
+- `app/services/store.py` refactored into `InMemoryStore` + `SqliteStore` (was a single in-memory class). `Store` kept as a backwards-compatible alias.
 
 ### Planned
 - Wire Chroma + RAG over clinical guidelines.
