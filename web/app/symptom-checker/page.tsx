@@ -73,9 +73,9 @@ export default function SymptomChecker() {
       <h1 className="text-2xl font-bold mb-1">Symptom Checker</h1>
       <p className="text-subtext mb-6">Select symptoms → ranked conditions, triage, and a plain-language explanation.</p>
 
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div role="group" aria-label="Symptoms" className="flex flex-wrap gap-2 mb-4">
         {COMMON.map((s) => (
-          <button key={s} onClick={() => toggle(s)}
+          <button key={s} onClick={() => toggle(s)} aria-pressed={selected.includes(s)}
             className={`rounded-full border px-3 py-1 text-sm transition-colors ${
               selected.includes(s)
                 ? "border-mauve bg-surface0 text-text"
@@ -87,8 +87,8 @@ export default function SymptomChecker() {
       </div>
 
       <div className="flex items-center gap-3 mb-4">
-        <label className="text-sm text-subtext">Age (months):</label>
-        <input type="number" value={age} onChange={(e) => setAge(e.target.value)}
+        <label htmlFor="age-months" className="text-sm text-subtext">Age (months):</label>
+        <input id="age-months" type="number" value={age} onChange={(e) => setAge(e.target.value)}
           className="w-24 rounded-md border border-surface0 bg-mantle px-2 py-1 text-sm" />
         <button onClick={run} disabled={!selected.length || loading}
           className="rounded-md bg-mauve px-4 py-1.5 text-sm font-medium text-crust disabled:opacity-40">
@@ -96,10 +96,10 @@ export default function SymptomChecker() {
         </button>
       </div>
 
-      {err && <div className="text-red text-sm mb-4">{err}</div>}
+      {err && <div role="alert" className="text-red text-sm mb-4">{err}</div>}
 
       {result && (
-        <div className="space-y-4">
+        <div className="space-y-4" aria-live="polite">
           <div className={`inline-block rounded-md border px-3 py-1 text-sm font-medium ${TRIAGE_STYLE[result.triage]}`}>
             Triage: {result.triage}
           </div>

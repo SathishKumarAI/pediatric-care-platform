@@ -2,7 +2,9 @@
 
 > **Target: WCAG 2.1 AA.** This is a public-facing health tool — worried parents, varied devices, assistive tech. Accessibility here is a usability and equity requirement, not a checkbox.
 >
-> **Current state:** the UI is semantic HTML (real `<button>`, `<input>`, `<label>`, `<nav>`, `<a>`, `lang="en"`) on a dark Catppuccin Mocha theme. That's a decent baseline, but there are concrete gaps below — most notably unlabeled associations, missing focus styling, and unverified contrast. Findings are grounded in `web/app/symptom-checker/page.tsx`, `web/app/layout.tsx`, `web/app/globals.css`.
+> **Current state:** the UI is semantic HTML (real `<button>`, `<input>`, `<label>`, `<nav>`, `<a>`, `lang="en"`) on a dark Catppuccin Mocha theme. Findings are grounded in `web/app/symptom-checker/page.tsx`, `web/app/layout.tsx`, `web/app/globals.css`.
+>
+> **PCP-17 (done):** global `:focus-visible` ring; symptom chips expose `aria-pressed` + the group has `role="group"`; age inputs (symptom-checker + stages) are label-associated (`htmlFor`/`id`); results use `aria-live="polite"`; errors use `role="alert"`. **Still open:** Mocha contrast verification, chip-group label wording, numeric `min`/`max`/`inputmode`, full keyboard-trap audit.
 
 ## Standards & scope
 

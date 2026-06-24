@@ -30,8 +30,8 @@ export default function Stages() {
       <p className="text-subtext mb-6">Developmental milestones and red flags by age (from Medical-Research data).</p>
 
       <div className="flex items-center gap-3 mb-6">
-        <label className="text-sm text-subtext">Age (months):</label>
-        <input type="number" value={age} onChange={(e) => setAge(e.target.value)}
+        <label htmlFor="stage-age" className="text-sm text-subtext">Age (months):</label>
+        <input id="stage-age" type="number" value={age} onChange={(e) => setAge(e.target.value)}
           className="w-24 rounded-md border border-surface0 bg-mantle px-2 py-1 text-sm" />
         <button onClick={load} className="rounded-md bg-mauve px-4 py-1.5 text-sm font-medium text-crust">View</button>
       </div>

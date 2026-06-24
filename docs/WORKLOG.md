@@ -2,6 +2,22 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 16:08 — PCP-17: Accessibility pass
+
+**Summary:** Closed the high-priority a11y gaps from `docs/accessibility.md`.
+
+**Changes:**
+- `web/app/globals.css` — global `:focus-visible` ring (WCAG 2.4.7).
+- `web/app/symptom-checker/page.tsx` — chips `aria-pressed` + `role="group"`; age input label-associated; results `aria-live="polite"`; error `role="alert"`.
+- `web/app/stages/page.tsx` — age input label-associated.
+- `web/app/__tests__/symptom-a11y.test.tsx` — chip aria-pressed toggle test (11 web tests).
+- `docs/accessibility.md` — marked done items; listed remaining (contrast, chip-group wording, numeric attrs, keyboard-trap audit).
+
+**Verification:** Vitest 11/11; `next build` clean.
+
+**Follow-ups:**
+- [ ] PCP-15 observability; PCP-14 RBAC; remaining a11y items.
+
 ## 2026-06-24 16:00 — PCP-8: Auth & accounts
 
 **Summary:** Added account signup/login with hashed passwords and token
