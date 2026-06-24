@@ -1,11 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api, StageResponse } from "@/lib/api";
+import { usePatient } from "@/lib/patient-context";
+import { MilestoneTimeline } from "../_components/MilestoneTimeline";
 
 export default function Stages() {
+  const { selected } = usePatient();
   const [age, setAge] = useState("12");
   const [data, setData] = useState<StageResponse | null>(null);
   const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selected) setAge(String(selected.age_months));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
 
   async function load() {
     setErr(null);
@@ -33,6 +41,10 @@ export default function Stages() {
       {data && (
         <div className="space-y-5">
           <div className="text-lg">Stage: <span className="text-mauve font-semibold">{data.stage}</span></div>
+          <div className="rounded-lg border border-surface0 bg-mantle p-4">
+            <h2 className="font-semibold mb-2">Milestone timeline</h2>
+            <MilestoneTimeline milestones={data.expected} currentAge={data.age_months} />
+          </div>
           <div>
             <h2 className="font-semibold mb-2">Expected milestones</h2>
             <div className="space-y-1">

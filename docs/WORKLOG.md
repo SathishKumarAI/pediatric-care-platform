@@ -2,6 +2,25 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 15:48 — PCP-11: Growth milestone timeline chart
+
+**Summary:** Added a milestone timeline chart to the stages page. Researched
+true percentile charts and split that into a new backlog item (PCP-18).
+
+**Changes:**
+- `web/app/_components/MilestoneTimeline.tsx` — dependency-free SVG: milestones plotted by age, domain-colored, with a dashed current-age marker + legend.
+- `web/app/stages/page.tsx` — renders the chart; age prefills from the active child.
+- Backlog: added **PCP-18** (anthropometric measurement capture + WHO/CDC LMS percentile curves) to `docs/TICKETS.md` and `docs/feature-backlog.md`.
+
+**Decisions / research:**
+- True growth *percentile* charts need (a) per-child height/weight/head-circ measurements over time and (b) WHO (0–24mo) + CDC (2–20y) LMS reference tables — neither exists yet. Rather than fake it, PCP-11 ships the milestone timeline (real data we have) and PCP-18 captures the percentile work honestly.
+- No chart library — hand-rolled SVG keeps the desktop bundle small (consistent with the lean stack).
+
+**Verification:** Vitest 9/9; `next build` clean (10 routes).
+
+**Follow-ups:**
+- [ ] PCP-8 auth; PCP-18 percentile curves (researched, backlogged).
+
 ## 2026-06-24 15:40 — PCP-9 + PCP-10: cancel/reschedule + availability
 
 **Summary:** Started v0.5. Added appointment cancel/reschedule and doctor

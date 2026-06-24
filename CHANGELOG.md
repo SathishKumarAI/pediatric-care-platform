@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Growth milestone timeline chart on the stages page — an SVG plotting milestones by age with a current-age marker; age prefills from the active child (PCP-11). (True height/weight percentile curves split out to PCP-18, which needs measurement capture + WHO/CDC reference data.)
 - Appointment cancel / reschedule: `PATCH /appointments/{id}` (cancel frees the slot; reschedule re-checks conflicts) with cancel/reschedule buttons in the UI (PCP-9).
 - Doctor availability enforcement: booking or rescheduling on a day the doctor doesn't work is rejected with 409 (PCP-10).
 

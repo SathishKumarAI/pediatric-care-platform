@@ -146,8 +146,11 @@
 |---------|-------------|--------|----------|--------|------------|
 | Stage + milestones by age | `GET /stages/{age_months}` (motor/language/social/cognitive) | PED+MR | Core | done | — |
 | Red flags by stage | Warning signs per age | PED | Core | done | stages |
+| Milestone timeline chart | SVG timeline of milestones by age + now-marker (PCP-11) | NEW | Growing | done | stages |
 | Per-child growth tracking | Track each child over time | PED | Core | planned | persistence, auth |
-| Percentile charts | Height/weight/head-circ percentiles | PED | Growing | planned | per-child tracking |
+| Percentile charts (PCP-18) | Height/weight/head-circ percentiles | PED | Growing | planned | measurements + reference data |
+| ↳ Measurement capture | Add height/weight/head-circ to a child over time | NEW | Growing | planned | per-child tracking |
+| ↳ WHO/CDC reference curves | Bundle WHO 0–24mo + CDC 2–20y LMS percentile tables; plot child vs P3–P97 | NEW | Growing | planned | measurement capture |
 | Milestone check-off | Mark milestones achieved | NEW | Growing | planned | per-child tracking |
 | Vaccination schedule | Recommended schedule + reminders | PED | Growing | planned | immunization tracker |
 
