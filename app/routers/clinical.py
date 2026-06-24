@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from ..schemas import (
     Appointment,
@@ -14,12 +14,19 @@ from ..schemas import (
     MedicalRecord,
     Patient,
     PatientCreate,
+    Role,
     StageResponse,
 )
 from ..services.stages import stage_for
 from ..services.store import get_store
+from .auth import require_roles
 
 router = APIRouter(tags=["clinical"])
+
+# RBAC dependencies (no-op while REQUIRE_AUTH is off). Module-level so they are
+# names, not calls, in endpoint signatures.
+_auth_any = Depends(require_roles())
+_auth_record = Depends(require_roles(Role.doctor, Role.admin, Role.guardian))
 
 
 @router.get("/doctors", response_model=list[Doctor])
@@ -28,7 +35,7 @@ def doctors() -> list[Doctor]:
 
 
 @router.post("/patients", response_model=Patient, status_code=201)
-def create_patient(data: PatientCreate) -> Patient:
+def create_patient(data: PatientCreate, _=_auth_any) -> Patient:
     return get_store().create_patient(data)
 
 
@@ -46,7 +53,7 @@ def patient(patient_id: str) -> Patient:
 
 
 @router.post("/appointments", response_model=Appointment, status_code=201)
-def book(data: AppointmentCreate) -> Appointment:
+def book(data: AppointmentCreate, _=_auth_any) -> Appointment:
     try:
         return get_store().create_appointment(data)
     except ValueError as e:
@@ -59,7 +66,7 @@ def appointments(patient_id: str | None = None) -> list[Appointment]:
 
 
 @router.patch("/appointments/{appt_id}", response_model=Appointment)
-def update_appointment(appt_id: str, data: AppointmentUpdate) -> Appointment:
+def update_appointment(appt_id: str, data: AppointmentUpdate, _=_auth_any) -> Appointment:
     if data.status is None and data.start is None:
         raise HTTPException(status_code=422, detail="Provide status and/or start")
     try:
@@ -76,7 +83,8 @@ def records(subject: str) -> list[MedicalRecord]:
 
 
 @router.post("/records", response_model=MedicalRecord, status_code=201)
-def add_record(rec: MedicalRecord) -> MedicalRecord:
+def add_record(rec: MedicalRecord,
+               _=_auth_record) -> MedicalRecord:
     return get_store().add_record(rec)
 
 

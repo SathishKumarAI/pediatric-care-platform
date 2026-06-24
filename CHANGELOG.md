@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- RBAC enforcement (PCP-14a): flag-gated by `REQUIRE_AUTH` (off for the open demo). When on, write endpoints (patients, appointments, records) require a valid bearer token; record creation is limited to `doctor`/`admin`/`guardian`. Returns 401 (unauth) / 403 (wrong role). Reads stay open. `require_roles()` dependency.
 - Observability (PCP-15a): request-timing middleware (`X-Response-Time-ms` header + per-request logs), in-process per-route counters, and a `GET /metrics` endpoint in Prometheus text format. (Distributed tracing / Sentry / dashboards remain under PCP-15.)
 - Accessibility pass (PCP-17): global `:focus-visible` ring; symptom chips expose `aria-pressed` within a labeled `role="group"`; age inputs are label-associated; results announced via `aria-live`; errors use `role="alert"`.
 - Auth & accounts (PCP-8): `POST /auth/signup`, `POST /auth/login`, `GET /auth/me`, `POST /auth/logout`. PBKDF2-HMAC-SHA256 password hashing (stdlib) + opaque token sessions in a `sessions` table; `users` table; `Role`-typed accounts. New `/login` page, auth context, token-aware API client (sends `Authorization: Bearer`), and a sidebar account badge. `get_current_user` dependency is in place for RBAC (PCP-14). Spec at `specs/auth.md`.

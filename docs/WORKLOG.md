@@ -2,6 +2,27 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 16:26 — PCP-14a: RBAC enforcement
+
+**Summary:** Added role-based access enforcement on write endpoints, gated by a
+`REQUIRE_AUTH` flag so the open demo and tests are unaffected by default.
+
+**Changes:**
+- `app/config.py` — `require_auth` (env `REQUIRE_AUTH`) via `default_factory` so a cleared settings cache re-reads it at runtime (toggleable).
+- `app/routers/auth.py` — `require_roles(*roles)` dependency: no-op when the flag is off; else requires a token + (optional) role.
+- `app/routers/clinical.py` — module-level `_auth_any` / `_auth_record` deps on patient/appointment/record writes (records limited to doctor/admin/guardian).
+- `pyproject.toml` — ruff `flake8-bugbear.extend-immutable-calls` for FastAPI `Depends`/`Header`/`Query`/`Path`.
+- `.env.example` — documented `REQUIRE_AUTH`. Tests: open-by-default + enforced-when-enabled (401/403). 25 backend tests.
+
+**Decisions:**
+- Flag-gated rather than always-on: keeps the synthetic-data demo open + tests green, while giving production a single switch. The frontend already sends the bearer token, so enabling it "just works" for logged-in users.
+- Bug found + fixed: `Settings` read env at class-definition time (defaults baked at import), so runtime toggling didn't work — switched `require_auth` to `default_factory`.
+
+**Verification:** backend 25/25; ruff clean.
+
+**Follow-ups:**
+- [ ] PCP-14 remainder (consent capture, audit log persistence, field encryption); PCP-12 Neo4j; PCP-13 ML; PCP-16 signing.
+
 ## 2026-06-24 16:16 — PCP-15a: Observability (metrics + timing)
 
 **Summary:** Added request-timing middleware, in-process per-route metrics, and

@@ -186,6 +186,39 @@ def test_auth_signup_validation_422():
     assert client.post("/auth/signup", json={"email": "a@b.co", "password": "short"}).status_code == 422
 
 
+def test_rbac_open_by_default():
+    # REQUIRE_AUTH is off in tests -> writes work without a token
+    assert client.post("/patients", json={"name": "Open", "birth_date": "2024-01-01"}).status_code == 201
+
+
+def test_rbac_enforced_when_enabled():
+    import os
+
+    from app.config import get_settings
+
+    os.environ["REQUIRE_AUTH"] = "true"
+    get_settings.cache_clear()
+    try:
+        body = {"name": "Gated", "birth_date": "2024-01-01"}
+        assert client.post("/patients", json=body).status_code == 401  # no token
+
+        guardian = client.post("/auth/signup", json={"email": "rbac@ex.com", "password": "pw1234"}).json()["token"]
+        gh = {"Authorization": f"Bearer {guardian}"}
+        assert client.post("/patients", json=body, headers=gh).status_code == 201  # authed guardian ok
+
+        researcher = client.post(
+            "/auth/signup", json={"email": "res@ex.com", "password": "pw1234", "role": "researcher"}
+        ).json()["token"]
+        rec = {"id": "r-rbac", "subject": "Gated", "recorded": "2026-06-24T10:00:00Z", "note": "n", "attachments": []}
+        # researcher lacks the role for adding records
+        assert client.post("/records", json=rec, headers={"Authorization": f"Bearer {researcher}"}).status_code == 403
+
+        assert client.get("/doctors").status_code == 200  # reads stay open
+    finally:
+        os.environ.pop("REQUIRE_AUTH", None)
+        get_settings.cache_clear()
+
+
 def test_persistence_survives_store_restart():
     """A record written to the SQLite store is still there after the in-process
     singleton is rebuilt (simulating a service restart)."""

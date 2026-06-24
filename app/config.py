@@ -7,7 +7,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Settings(BaseModel):
@@ -25,6 +25,12 @@ class Settings(BaseModel):
 
     # --- Relational store (FHIR-mapped records). SQLite local default. ---
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./data/pcp.db")
+
+    # --- Auth enforcement (RBAC). Off for the open demo; production sets true. ---
+    # default_factory so a cleared cache re-reads the env at instantiation (toggleable).
+    require_auth: bool = Field(
+        default_factory=lambda: os.getenv("REQUIRE_AUTH", "false").lower() in ("1", "true", "yes")
+    )
 
     # --- Service ---
     app_name: str = "Pediatric Care Platform"

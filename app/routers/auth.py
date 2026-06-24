@@ -5,9 +5,12 @@ in PCP-14.
 """
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from fastapi import APIRouter, Header, HTTPException
 
-from ..schemas import AuthToken, LoginRequest, UserCreate, UserPublic
+from ..config import get_settings
+from ..schemas import AuthToken, LoginRequest, Role, UserCreate, UserPublic
 from ..services.auth import get_auth
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -25,6 +28,19 @@ def get_current_user(authorization: str | None = Header(default=None)) -> UserPu
     if user is None:
         raise HTTPException(status_code=401, detail="Not authenticated")
     return user
+
+
+def require_roles(*roles: Role) -> Callable:
+    """Dependency factory for RBAC. No-op while `REQUIRE_AUTH` is off (open demo);
+    when on, requires a valid token and (if roles given) one of those roles."""
+    def dep(authorization: str | None = Header(default=None)) -> UserPublic | None:
+        if not get_settings().require_auth:
+            return None
+        user = get_current_user(authorization)
+        if roles and user.role not in roles:
+            raise HTTPException(status_code=403, detail="Insufficient role")
+        return user
+    return dep
 
 
 @router.post("/signup", response_model=AuthToken, status_code=201)
