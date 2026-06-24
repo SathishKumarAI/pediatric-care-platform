@@ -4,7 +4,7 @@
 > [`roadmap.md`](roadmap.md) + [`feature-backlog.md`](feature-backlog.md).
 > Status: `todo` · `in-progress` · `blocked` · `done`. Newest tickets appended; statuses edited in place.
 
-**Current focus:** PCP-12 — Neo4j-backed knowledge graph (then PCP-13 ML, PCP-16 signing)
+**Current focus:** PCP-12 — Neo4j-backed knowledge graph (infra-bound; see wrap-up)
 
 **Milestone:** ✅ v0.2 Foundations COMPLETE (PCP-1…7) — tagged v0.2.0. Next: v0.5 Clinical depth.
 
@@ -30,7 +30,7 @@
 |----|-------|--------|----------|------------|
 | PCP-14 | Compliance controls: consent, audit, encryption (RBAC shipped in PCP-14a) | todo | Heavy | PCP-1, PCP-8 |
 | PCP-15 | Observability: tracing, Sentry, dashboards (metrics shipped in PCP-15a) | todo | Heavy | — |
-| PCP-16 | Desktop installer signing + auto-update | todo | Heavy | — |
+| PCP-16 | Installer code-signing + notarization + auto-update (CI build shipped in PCP-16a) | todo | Heavy | signing certs |
 
 ## Done
 | ID | Title | Status | Shipped |
@@ -50,3 +50,4 @@
 | PCP-17 | WCAG 2.1 AA accessibility pass | done | 2026-06-24 — `:focus-visible` ring, chip `aria-pressed` + group, label associations, `aria-live` results, `role=alert` errors; a11y test; doc updated (remaining gaps noted) |
 | PCP-15a | Observability: request metrics + timing | done | 2026-06-24 — timing middleware (`X-Response-Time-ms`), in-process per-route counters, `GET /metrics` (Prometheus text). Tracing/Sentry/dashboards remain in PCP-15 |
 | PCP-14a | RBAC enforcement (role-gated writes) | done | 2026-06-24 — flag-gated `REQUIRE_AUTH`; `require_roles()` dep on patient/appointment/record writes (records limited to doctor/admin/guardian); 401/403; toggle test. Consent/audit/encryption remain in PCP-14 |
+| PCP-16a | Release CI to build desktop installers | done | 2026-06-24 — `.github/workflows/release.yml` (tauri-action, 3-OS matrix, draft release on `v*` tag). Code-signing/notarization/auto-update need certs → remain in PCP-16 |

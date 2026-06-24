@@ -2,6 +2,24 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 16:34 — PCP-16a: Release CI for desktop installers
+
+**Summary:** Added a tag-triggered CI workflow that builds Tauri installers for
+all three desktop OSes and drafts a GitHub release.
+
+**Changes:**
+- `.github/workflows/release.yml` — `tauri-action`, matrix (ubuntu/macos/windows), Linux webkit deps, draft release on `v*`. Validated as YAML.
+
+**Decisions / honesty:**
+- Code-signing, notarization, and the auto-updater need real certs/keys (Apple Developer ID, Windows cert, Tauri updater keypair) supplied as repo secrets — out of scope for this environment. The workflow is wired to consume those secrets; producing/verifying signed artifacts is the remainder of PCP-16.
+
+**Verification:** both workflow files parse as valid YAML. (Full run only happens on GitHub Actions on a tag push — not executed here.)
+
+**Follow-ups (infra-bound — code paths can be scaffolded but not verified locally):**
+- [ ] PCP-12 Neo4j-backed graph (needs a Neo4j server).
+- [ ] PCP-13 real ML model (needs ML deps + training).
+- [ ] PCP-14 consent/audit/encryption; PCP-15 tracing/Sentry; PCP-16 signing certs; PCP-18 percentile data.
+
 ## 2026-06-24 16:26 — PCP-14a: RBAC enforcement
 
 **Summary:** Added role-based access enforcement on write endpoints, gated by a

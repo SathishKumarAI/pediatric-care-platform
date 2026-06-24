@@ -1,0 +1,49 @@
+name: Release (desktop installers)
+
+# Builds signed Tauri installers for each OS when a v* tag is pushed.
+# Requires repo secrets (NOT committed): TAURI_SIGNING_PRIVATE_KEY,
+# TAURI_SIGNING_PRIVATE_KEY_PASSWORD (for the updater), and per-OS code-signing
+# certs (APPLE_*, WINDOWS_CERTIFICATE) once you set up notarization/signing.
+# See docs/deployment.md.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-latest
+          - platform: macos-latest
+          - platform: windows-latest
+    runs-on: ${{ matrix.platform }}
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux deps
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - run: npm install
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          projectPath: web
+          tagName: ${{ github.ref_name }}
+          releaseName: "Pediatric Care Platform ${{ github.ref_name }}"
+          releaseDraft: true
+          args: ""
