@@ -33,6 +33,19 @@ export interface Appointment {
   status: "booked" | "cancelled" | "fulfilled";
 }
 
+export type Role = "patient" | "guardian" | "doctor" | "admin" | "researcher";
+
+export interface UserPublic {
+  id: string;
+  email: string;
+  role: Role;
+}
+
+export interface AuthToken {
+  token: string;
+  user: UserPublic;
+}
+
 export type Sex = "male" | "female" | "other" | "unknown";
 
 export interface Patient {
@@ -65,20 +78,45 @@ export interface StageResponse {
   red_flags: string[];
 }
 
+export const TOKEN_KEY = "pcp.token";
+
+function authHeaders(): Record<string, string> {
+  if (typeof localStorage === "undefined") return {};
+  const t = localStorage.getItem(TOKEN_KEY);
+  return t ? { Authorization: `Bearer ${t}` } : {};
+}
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...init,
+    headers: { "Content-Type": "application/json", ...authHeaders(), ...init?.headers },
   });
   if (!res.ok) {
     const detail = await res.json().catch(() => ({}));
     throw new Error(detail.detail ?? `Request failed: ${res.status}`);
   }
+  if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
 export const api = {
   health: () => req<Record<string, unknown>>("/health"),
+
+  signup: (email: string, password: string, role?: Role) =>
+    req<AuthToken>("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({ email, password, role: role ?? "guardian" }),
+    }),
+
+  login: (email: string, password: string) =>
+    req<AuthToken>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    }),
+
+  me: () => req<UserPublic>("/auth/me"),
+
+  logout: () => req<void>("/auth/logout", { method: "POST" }),
 
   predict: (symptoms: string[], age_months?: number) =>
     req<SymptomResponse>("/predict", {

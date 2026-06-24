@@ -140,6 +140,44 @@ def test_patient_missing_fields_422():
     assert client.post("/patients", json={"name": "No DOB"}).status_code == 422
 
 
+def test_auth_signup_login_me_flow():
+    s = client.post("/auth/signup", json={"email": "Parent@Example.com", "password": "s3cret!"})
+    assert s.status_code == 201
+    body = s.json()
+    assert body["token"]
+    assert body["user"]["email"] == "parent@example.com"  # normalized
+    assert body["user"]["role"] == "guardian"  # default
+
+    # duplicate email
+    assert client.post("/auth/signup", json={"email": "parent@example.com", "password": "x123456"}).status_code == 409
+
+    # login
+    li = client.post("/auth/login", json={"email": "parent@example.com", "password": "s3cret!"})
+    assert li.status_code == 200
+    token = li.json()["token"]
+
+    # wrong password
+    assert client.post("/auth/login", json={"email": "parent@example.com", "password": "nope"}).status_code == 401
+
+    # me with + without token
+    me = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert me.status_code == 200 and me.json()["email"] == "parent@example.com"
+    assert client.get("/auth/me").status_code == 401
+    assert client.get("/auth/me", headers={"Authorization": "Bearer garbage"}).status_code == 401
+
+
+def test_auth_password_not_stored_plaintext():
+    from app.services.auth import get_auth
+    client.post("/auth/signup", json={"email": "hash@example.com", "password": "plaintextpw"})
+    row = get_auth().conn.execute("SELECT password_hash FROM users WHERE email=?", ("hash@example.com",)).fetchone()
+    assert "plaintextpw" not in row["password_hash"]
+    assert "$" in row["password_hash"]  # salt$hash format
+
+
+def test_auth_signup_validation_422():
+    assert client.post("/auth/signup", json={"email": "a@b.co", "password": "short"}).status_code == 422
+
+
 def test_persistence_survives_store_restart():
     """A record written to the SQLite store is still there after the in-process
     singleton is rebuilt (simulating a service restart)."""

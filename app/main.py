@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from . import __version__
 from .config import get_settings
 from .observability import configure_logging
-from .routers import clinical, intelligence
+from .routers import auth, clinical, intelligence
 from .services.knowledge_graph import get_graph
 
 configure_logging()
@@ -33,6 +33,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(intelligence.router)
 app.include_router(clinical.router)
 

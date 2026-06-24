@@ -2,6 +2,27 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 16:00 — PCP-8: Auth & accounts
+
+**Summary:** Added account signup/login with hashed passwords and token
+sessions, plus the frontend auth flow. Identity now exists; route enforcement
+(RBAC) is the next security ticket (PCP-14).
+
+**Changes:**
+- Backend: `app/services/auth.py` (PBKDF2 hashing, `AuthService` over `users`/`sessions` tables, token sessions), `app/routers/auth.py` (`/auth/signup|login|me|logout` + `get_current_user` dep), `users`/`sessions` schema, `UserCreate`/`LoginRequest`/`UserPublic`/`AuthToken` schemas, router wired in `main.py`.
+- Frontend: `web/lib/auth-context.tsx`, `/login` page (login/signup toggle), token-aware `api` client (`Authorization` header, 204 handling), sidebar `AccountBadge`.
+- Tests: 3 backend auth tests incl. "password never stored plaintext"; 1 web api test. 22 backend + 10 web tests; ruff clean.
+- `specs/auth.md`.
+
+**Decisions:**
+- Stdlib-only auth (PBKDF2 + random tokens), no JWT/secret to leak; sessions in DB. Token expiry/refresh deferred.
+- Did NOT gate clinical routes yet — that's RBAC (PCP-14) — so existing flows/tests stay green. `get_current_user` is ready to drop in.
+
+**Verification:** backend 22/22; web 10/10; ruff clean; `next build` clean (11 routes incl. `/login`).
+
+**Follow-ups:**
+- [ ] PCP-17 a11y; PCP-14 RBAC enforcement using `get_current_user`; PCP-15 observability.
+
 ## 2026-06-24 15:48 — PCP-11: Growth milestone timeline chart
 
 **Summary:** Added a milestone timeline chart to the stages page. Researched

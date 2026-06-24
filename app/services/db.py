@@ -24,6 +24,18 @@ CREATE TABLE IF NOT EXISTS appointments (
     reason TEXT,
     status TEXT NOT NULL DEFAULT 'booked'
 );
+CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'guardian',
+    created TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS sessions (
+    token TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    created TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS patients (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,

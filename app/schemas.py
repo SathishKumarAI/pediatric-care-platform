@@ -55,6 +55,28 @@ class Role(StrEnum):
     researcher = "researcher"
 
 
+class UserCreate(BaseModel):
+    email: str = Field(..., min_length=3)
+    password: str = Field(..., min_length=6)
+    role: Role = Role.guardian
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class UserPublic(BaseModel):
+    id: str
+    email: str
+    role: Role
+
+
+class AuthToken(BaseModel):
+    token: str
+    user: UserPublic
+
+
 class Sex(StrEnum):
     male = "male"
     female = "female"

@@ -43,4 +43,14 @@ describe("api client", () => {
     await api.records("patient-xyz");
     expect(String(f.mock.calls[0][0])).toMatch(/\/records\/patient-xyz$/);
   });
+
+  it("posts login credentials to /auth/login", async () => {
+    const f = mockFetch({ token: "t", user: { id: "u1", email: "a@b.co", role: "guardian" } });
+    vi.stubGlobal("fetch", f);
+    const out = await api.login("a@b.co", "pw");
+    expect(out.token).toBe("t");
+    const [url, init] = f.mock.calls[0];
+    expect(String(url)).toMatch(/\/auth\/login$/);
+    expect(JSON.parse(init.body)).toEqual({ email: "a@b.co", password: "pw" });
+  });
 });

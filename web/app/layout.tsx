@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AccountBadge } from "./_components/AccountBadge";
 import { ActivePatient } from "./_components/ActivePatient";
+import { AuthProvider } from "@/lib/auth-context";
 import { PatientProvider } from "@/lib/patient-context";
 import "./globals.css";
 
@@ -23,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <AuthProvider>
         <PatientProvider>
           <div className="flex min-h-screen">
             <aside className="w-60 shrink-0 bg-mantle border-r border-surface0 p-5">
@@ -42,10 +45,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 ))}
               </nav>
               <ActivePatient />
+              <AccountBadge />
             </aside>
             <main className="flex-1 p-8 max-w-4xl">{children}</main>
           </div>
         </PatientProvider>
+        </AuthProvider>
       </body>
     </html>
   );

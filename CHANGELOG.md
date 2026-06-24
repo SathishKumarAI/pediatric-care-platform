@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Auth & accounts (PCP-8): `POST /auth/signup`, `POST /auth/login`, `GET /auth/me`, `POST /auth/logout`. PBKDF2-HMAC-SHA256 password hashing (stdlib) + opaque token sessions in a `sessions` table; `users` table; `Role`-typed accounts. New `/login` page, auth context, token-aware API client (sends `Authorization: Bearer`), and a sidebar account badge. `get_current_user` dependency is in place for RBAC (PCP-14). Spec at `specs/auth.md`.
 - Growth milestone timeline chart on the stages page — an SVG plotting milestones by age with a current-age marker; age prefills from the active child (PCP-11). (True height/weight percentile curves split out to PCP-18, which needs measurement capture + WHO/CDC reference data.)
 - Appointment cancel / reschedule: `PATCH /appointments/{id}` (cancel frees the slot; reschedule re-checks conflicts) with cancel/reschedule buttons in the UI (PCP-9).
 - Doctor availability enforcement: booking or rescheduling on a day the doctor doesn't work is rejected with 409 (PCP-10).

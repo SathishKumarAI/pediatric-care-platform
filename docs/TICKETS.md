@@ -4,7 +4,7 @@
 > [`roadmap.md`](roadmap.md) + [`feature-backlog.md`](feature-backlog.md).
 > Status: `todo` · `in-progress` · `blocked` · `done`. Newest tickets appended; statuses edited in place.
 
-**Current focus:** PCP-8 — Auth & accounts
+**Current focus:** PCP-17 — Accessibility pass (then PCP-15 observability, PCP-14 RBAC)
 
 **Milestone:** ✅ v0.2 Foundations COMPLETE (PCP-1…7) — tagged v0.2.0. Next: v0.5 Clinical depth.
 
@@ -21,7 +21,6 @@
 ## To do — v0.5 Clinical depth
 | ID | Title | Status | Priority | Depends on |
 |----|-------|--------|----------|------------|
-| PCP-8 | Auth & accounts (signup/login/roles) | todo | Core | PCP-1 |
 | PCP-12 | Neo4j-backed knowledge graph | todo | Growing | — |
 | PCP-13 | Real ML model swap-in (replace overlap scorer) | todo | Heavy | eval harness |
 | PCP-18 | Anthropometric measurements + WHO/CDC percentile curves | todo | Growing | PCP-4 |
@@ -48,3 +47,4 @@
 | PCP-9 | Appointment cancel / reschedule | done | 2026-06-24 — `PATCH /appointments/{id}`; cancel frees slot, reschedule re-checks conflict; UI cancel/reschedule buttons; tests |
 | PCP-10 | Doctor availability enforcement | done | 2026-06-24 — booking/reschedule on a non-working day rejected 409; enforced in both stores; tests |
 | PCP-11 | Growth milestone timeline chart | done | 2026-06-24 — SVG timeline of milestones by age + current-age marker on stages page (no chart lib); age prefills from active child. True percentile curves split out to PCP-18 |
+| PCP-8 | Auth & accounts (signup/login/roles) | done | 2026-06-24 — PBKDF2 password hashing + token sessions (`/auth/signup,login,me,logout`); `get_current_user` dep (RBAC-ready); `/login` page + auth context + token-aware client + sidebar account badge; spec; 22 backend + 10 web tests |
