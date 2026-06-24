@@ -31,8 +31,10 @@ export default function SymptomChecker() {
   const toggle = (s: string) =>
     setSelected((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));
 
+  const [saved, setSaved] = useState<string | null>(null);
+
   async function run() {
-    setLoading(true); setErr(null); setResult(null);
+    setLoading(true); setErr(null); setResult(null); setSaved(null);
     try {
       const r = await api.predict(selected, age ? Number(age) : undefined);
       setResult(r);
@@ -40,6 +42,29 @@ export default function SymptomChecker() {
       setErr((e as Error).message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function saveToRecord() {
+    if (!activeChild || !result) return;
+    const top = result.predictions
+      .map((p) => `${p.disease.replace(/_/g, " ")} ${(p.confidence * 100).toFixed(0)}%`)
+      .join(", ");
+    const note =
+      `Symptom check — triage: ${result.triage}. ` +
+      `Symptoms: ${selected.join(", ") || "none"}. ` +
+      `Top: ${top || "none"}.`;
+    try {
+      await api.addRecord({
+        id: crypto.randomUUID(),
+        subject: activeChild.id,
+        recorded: new Date().toISOString(),
+        note,
+        attachments: [],
+      });
+      setSaved(`Saved to ${activeChild.name}'s record.`);
+    } catch (e) {
+      setErr((e as Error).message);
     }
   }
 
@@ -96,6 +121,19 @@ export default function SymptomChecker() {
             <div className="rounded-lg border border-surface0 bg-mantle p-3 text-sm text-subtext">{result.explanation}</div>
           )}
           <div className="text-xs text-peach">{result.disclaimer}</div>
+
+          {activeChild && (
+            <div className="flex items-center gap-3 pt-1">
+              <button
+                onClick={saveToRecord}
+                disabled={!!saved}
+                className="rounded-md border border-mauve px-3 py-1.5 text-sm text-mauve hover:bg-surface0 disabled:opacity-40"
+              >
+                {saved ? "✓ Saved" : `Save to ${activeChild.name}'s record`}
+              </button>
+              {saved && <span className="text-sm text-green">{saved}</span>}
+            </div>
+          )}
         </div>
       )}
     </div>

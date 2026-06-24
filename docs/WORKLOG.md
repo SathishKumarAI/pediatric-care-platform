@@ -2,6 +2,20 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 15:18 — PCP-5: Save symptom result to record
+
+**Summary:** The symptom checker can now persist a result into the active
+child's medical record, connecting the AI layer to the clinical record.
+
+**Changes:**
+- `web/app/symptom-checker/page.tsx` — "Save to {child}'s record" button (shown only when a child is active); writes a `MedicalRecord` summarizing triage + top predictions + symptoms.
+- `specs/symptom-checker.md` — acceptance criteria for the save action.
+
+**Verification:** Vitest 4/4; `next build` clean (10 routes).
+
+**Follow-ups:**
+- [ ] PCP-6 — consistent loading/empty/error states across pages.
+
 ## 2026-06-24 15:12 — PCP-4: Patient/child profiles + active-child context
 
 **Summary:** Added child profiles end-to-end and a selected-child context that

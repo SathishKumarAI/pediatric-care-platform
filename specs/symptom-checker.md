@@ -21,6 +21,8 @@ visit, or seek urgent care. Also clinicians as a quick reference.
 - WHEN no symptoms are submitted THEN respond 422 (no guessing).
 - WHEN `explain=true` THEN include a 2–3 sentence parent-facing explanation; if the LLM is unreachable, fall back to a templated explanation (never error).
 - Every response carries a fixed medical disclaimer.
+- WHEN a result is shown AND a child is active THEN offer "Save to record"; saving writes a `MedicalRecord` (triage + top predictions summary) for that child (PCP-5).
+- WHEN no child is active THEN no save action is offered.
 
 ## Rules / logic (the real logic)
 - Confidence = (sum of matched symptom weights for a disease) / (sum of all that disease's symptom weights), from the knowledge graph.
