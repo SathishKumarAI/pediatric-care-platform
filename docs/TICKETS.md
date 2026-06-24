@@ -4,21 +4,19 @@
 > [`roadmap.md`](roadmap.md) + [`feature-backlog.md`](feature-backlog.md).
 > Status: `todo` · `in-progress` · `blocked` · `done`. Newest tickets appended; statuses edited in place.
 
-**Current focus:** PCP-7 — Form validation + inline errors
+**Current focus:** PCP-8 — Auth & accounts (start of v0.5)
 
-**Milestone:** v0.2 Foundations (persistence, records UI, patient context, frontend tests)
+**Milestone:** ✅ v0.2 Foundations COMPLETE (PCP-1…7) — tagged v0.2.0. Next: v0.5 Clinical depth.
 
 ---
 
 ## In progress
 | ID | Title | Status | Spec | Notes |
 |----|-------|--------|------|-------|
-| — | (none) | — | — | next: PCP-7 |
+| — | (none) | — | — | next: PCP-8 |
 
 ## To do — v0.2 Foundations
-| ID | Title | Status | Priority | Depends on |
-|----|-------|--------|----------|------------|
-| PCP-7 | Form validation + inline errors | todo | Core | — |
+✅ All done (PCP-1 … PCP-7) — see Done table.
 
 ## To do — v0.5 Clinical depth
 | ID | Title | Status | Priority | Depends on |
@@ -48,3 +46,4 @@
 | PCP-4 | Patient/child profile model + context | done | 2026-06-24 — Patient CRUD + persistence + computed age_months; `/patients` page; selected-child context (localStorage) drives appointments/records/symptom-checker; spec; 15 backend tests |
 | PCP-5 | Symptom checker: save result to record | done | 2026-06-24 — "Save to record" writes a triage+predictions summary to the active child's record |
 | PCP-6 | Loading / empty / error states across pages | done | 2026-06-24 — shared Loading/EmptyState/ErrorBanner (a11y roles + retry) applied to doctors/records/appointments/patients; 3 tests |
+| PCP-7 | Form validation + inline errors | done | 2026-06-24 — inline field errors on patients form (name + no future DOB) and appointment past-time guard; 2 tests (9 web total) |

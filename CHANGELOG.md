@@ -4,13 +4,25 @@ All notable changes to this project are documented here. Format follows [Keep a 
 
 ## [Unreleased]
 
+### Planned
+- PCP-8 Auth & accounts (signup/login/roles) — start of v0.5 Clinical depth.
+- Wire Chroma + RAG over clinical guidelines.
+- Swap the weighted-overlap predictor for a trained GNN behind the existing interface.
+- Implement `app/security.py` compliance controls (consent, encryption, audit, retention, RBAC, erasure).
+- Signed Tauri desktop installers + auto-update.
+
+## [0.2.0] — 2026-06-24
+
+v0.2 Foundations milestone (PCP-1 … PCP-7): persistence, child profiles + active-child context, frontend test stack, and UI state/validation polish.
+
 ### Added
+- Form validation with inline field errors: patients form (name required, no future birth date) and appointment past-time guard (PCP-7).
 - Shared loading / empty / error UI components with accessibility roles + retry, applied across doctors, records, appointments, and patients pages (PCP-6).
 - Symptom checker can save a result (triage + top predictions) to the active child's medical record (PCP-5).
 - Patient / child profiles (PCP-4): `POST`/`GET /patients`, `GET /patients/{id}` with persisted profiles and a computed `age_months`. New `/patients` (Children) page; a client-side active-child context (localStorage) now drives appointments (replaces hardcoded `p1`), the records subject, and the symptom-checker age. Spec at `specs/patients.md`.
 - Frontend testing: Vitest + Testing Library (api-client + Doctors-page tests, run in CI via `npm run test`) and Playwright e2e smoke (`web/e2e/smoke.spec.ts`, `npm run test:e2e`) (PCP-3).
 - Persistent SQLite store (`app/services/{db,store}.py`): records and appointments now survive restart. `InMemoryStore` and `SqliteStore` sit behind one interface, selected by `DATABASE_URL` (PCP-1).
-- Test isolation via `tests/conftest.py` (throwaway per-session SQLite DB) + persistence-across-restart test (now 12 passing).
+- Test isolation via `tests/conftest.py` (throwaway per-session SQLite DB) + persistence-across-restart test.
 - Medical Records UI (`web/app/records/page.tsx`): view a patient's append-only records by ID and add clinical notes with optional attachment refs (PCP-2).
 - `records` / `addRecord` methods + `MedicalRecord` type in the typed API client.
 - Backend tests for `POST`/`GET /records`.
@@ -19,13 +31,6 @@ All notable changes to this project are documented here. Format follows [Keep a 
 ### Changed
 - `app/services/store.py` refactored into `InMemoryStore` + `SqliteStore` (was a single in-memory class). `Store` kept as a backwards-compatible alias.
 - Enums (`Role`, `Sex`, `AppointmentStatus`) now use `enum.StrEnum`; `datetime.UTC` alias — project-wide `ruff check` clean.
-
-### Planned
-- Wire Chroma + RAG over clinical guidelines.
-- Swap the weighted-overlap predictor for a trained GNN behind the existing interface.
-- Implement `app/security.py` compliance controls (consent, encryption, audit, retention, RBAC, erasure).
-- Promote the in-memory store to persistent SQLite/Postgres.
-- Signed Tauri desktop installers.
 
 ## [0.1.0] — 2026-06-24
 

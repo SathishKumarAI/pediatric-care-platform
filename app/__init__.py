@@ -5,4 +5,4 @@ knowledge graph + compliance) with the Pediatrics clinical workflows
 (appointments, doctors, records) into one FastAPI service.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

@@ -14,6 +14,8 @@ export default function Appointments() {
   const [reason, setReason] = useState("");
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
 
+  const startInPast = !!start && new Date(start).getTime() < Date.now();
+
   const refresh = useCallback(() => {
     if (selected) api.appointments(selected.id).then(setAppts).catch(() => {});
     else setAppts([]);
@@ -56,12 +58,16 @@ export default function Appointments() {
             className="rounded-md border border-surface0 bg-base px-2 py-1.5 text-sm flex-1">
             {docs.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
-          <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)}
-            className="rounded-md border border-surface0 bg-base px-2 py-1.5 text-sm" />
+          <div>
+            <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)}
+              aria-invalid={startInPast}
+              className={`rounded-md border bg-base px-2 py-1.5 text-sm ${startInPast ? "border-red" : "border-surface0"}`} />
+          </div>
         </div>
+        {startInPast && <p className="text-xs text-red">Pick a time in the future.</p>}
         <input placeholder="Reason (optional)" value={reason} onChange={(e) => setReason(e.target.value)}
           className="w-full rounded-md border border-surface0 bg-base px-2 py-1.5 text-sm" />
-        <button onClick={book} disabled={!doctorId || !start || !selected}
+        <button onClick={book} disabled={!doctorId || !start || !selected || startInPast}
           className="rounded-md bg-mauve px-4 py-1.5 text-sm font-medium text-crust disabled:opacity-40">
           Book appointment
         </button>

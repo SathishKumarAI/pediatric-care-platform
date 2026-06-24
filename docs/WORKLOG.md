@@ -2,6 +2,26 @@
 
 > Append-only. Newest entry on top. Never delete or rewrite past entries.
 
+## 2026-06-24 15:30 — PCP-7 + v0.2.0 release
+
+**Summary:** Added form validation with inline errors, completing the v0.2
+Foundations milestone (PCP-1…7). Cut the v0.2.0 release.
+
+**Changes:**
+- `web/app/patients/page.tsx` — inline field errors (name required; birth date required + not in the future; `max` on the date input; `aria-invalid`).
+- `web/app/appointments/page.tsx` — inline past-time guard on the datetime field; book disabled when in the past.
+- `web/app/__tests__/patients-validation.test.tsx` — 2 tests (9 web tests total).
+- Version bumped to 0.2.0 in `pyproject.toml`, `app/__init__.py`, `web/package.json`, `web/src-tauri/{tauri.conf.json,Cargo.toml}`.
+- `CHANGELOG.md` — rolled Unreleased into `[0.2.0]`; deduped; refreshed Planned.
+
+**Decisions:**
+- Validation kept inline + lightweight (no form library yet); revisit react-hook-form/zod if forms grow.
+
+**Verification:** Vitest 9/9; backend 15/15; eval 100%; `next build` clean (10 routes). Tag: v0.2.0.
+
+**Follow-ups:**
+- [ ] v0.5 starts at PCP-8 (auth & accounts).
+
 ## 2026-06-24 15:24 — PCP-6: Loading / empty / error states
 
 **Summary:** Added shared, accessible state components and applied them across
