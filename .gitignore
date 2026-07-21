@@ -18,3 +18,8 @@ data/*.db
 .DS_Store
 
 # Node / Tauri handled by web/.gitignore
+
+# --- nested repos & local tooling (reorg 2026-07-20)
+Project-Med/
+medical-research-notebooks/
+pediatrics-flutter-app/
